@@ -77,50 +77,86 @@
     </section>
 
     <section id="tab-live" hidden>
-      <div id="live-setup">
-        <div class="card warning" id="live-warning">
-          ⚠️ Seu PC está desligado ou incompleto.
-          <a href="#" data-action="goto" data-tab="build">Vá para a Montagem</a> e ligue o PC.
+      <div class="desk" id="desk">
+        <div class="wall">
+          <div class="plaques" id="desk-plaques"></div>
+          <div class="ringlight" id="desk-ring" hidden></div>
+          <div class="chair" id="desk-chair" hidden></div>
         </div>
 
-        <h2>Escolha o jogo</h2>
-        <div class="games-grid" id="games"></div>
+        <div class="monitor">
+          <div class="webcam" id="desk-cam" hidden title="Logitech C920"><i></i></div>
+          <div class="screen" id="screen">
+            <div class="screen-off" id="screen-off">
+              <div class="no-signal">📺 Sem sinal</div>
+              <p>O PC está desligado ou incompleto.</p>
+              <button class="btn small" data-action="goto" data-tab="build">Ir para a Montagem</button>
+            </div>
 
-        <div class="card live-controls">
-          <div>
-            <h3>Duração</h3>
-            <div class="chips">
-              <button class="chip-btn" data-action="hours" data-h="1">1 hora (⚡20)</button>
-              <button class="chip-btn" data-action="hours" data-h="2">2 horas (⚡40)</button>
-              <button class="chip-btn" data-action="hours" data-h="4">4 horas (⚡80)</button>
+            <div class="os" id="screen-os" hidden>
+              <div class="os-icons">
+                <button class="os-icon" data-action="open-app"><span>🔴</span>StreamZinho</button>
+                <button class="os-icon" data-action="goto" data-tab="dev"><span>💻</span>Dev</button>
+                <button class="os-icon" data-action="goto" data-tab="shop"><span>🛒</span>Loja</button>
+                <button class="os-icon" data-action="goto" data-tab="goals"><span>🏆</span>Objetivos</button>
+              </div>
+              <div class="os-hint" id="os-hint">👈 Clique no <b>StreamZinho</b> para abrir uma live</div>
+
+              <div class="window" id="win-stream" hidden>
+                <div class="win-bar">
+                  <span>🔴 StreamZinho</span>
+                  <button class="win-close" data-action="close-app" aria-label="Fechar">✕</button>
+                </div>
+                <div class="win-body" id="live-setup">
+                  <h3>Escolha o jogo</h3>
+                  <div class="games-grid" id="games"></div>
+                  <div class="live-controls">
+                    <div class="chips">
+                      <button class="chip-btn" data-action="hours" data-h="1">1 hora (⚡20)</button>
+                      <button class="chip-btn" data-action="hours" data-h="2">2 horas (⚡40)</button>
+                      <button class="chip-btn" data-action="hours" data-h="4">4 horas (⚡80)</button>
+                    </div>
+                    <button class="btn live-btn" id="btn-live" data-action="start-live">🔴 Iniciar live</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="taskbar"><span>🪟 InfoOS</span><span id="os-clock"></span></div>
+            </div>
+
+            <div class="stream-screen" id="screen-live" hidden>
+              <canvas id="sim-canvas"></canvas>
+              <div class="live-badge">● AO VIVO</div>
+              <div class="live-top-viewers">👁 <span id="live-viewers-top">0</span></div>
+              <div class="live-cam" id="live-cam" hidden><span>🧑‍💻</span><span class="mic" id="live-mic">🎙️</span></div>
+              <div class="live-title"><span id="live-game"></span> <span class="live-fps" id="live-fps"></span></div>
+              <div class="sim-hint" id="sim-hint"></div>
+              <div class="event-banner" id="event-banner" hidden></div>
             </div>
           </div>
-          <button class="btn big live-btn" id="btn-live" data-action="start-live">🔴 Iniciar live</button>
+          <div class="monitor-neck"></div>
+          <div class="monitor-base"></div>
         </div>
 
-        <div class="card" id="last-live" hidden></div>
+        <div class="desk-top"><div class="desk-items" id="desk-items"></div></div>
       </div>
 
       <div id="live-running" hidden>
-        <div class="stream">
-          <div class="stream-screen">
-            <div class="live-scene" id="live-scene"></div>
-            <div class="live-badge">● AO VIVO</div>
-            <div class="live-cam" id="live-cam" hidden><span>🧑‍💻</span><span class="mic" id="live-mic">🎙️</span></div>
-            <div class="live-game" id="live-game"></div>
-            <div class="live-fps" id="live-fps"></div>
-          </div>
-          <div class="stream-stats">
-            <div><span class="muted">Espectadores</span><b>👁 <span id="live-viewers">0</span></b></div>
-            <div><span class="muted">Ganhos</span><b class="txt-good" id="live-earned"></b></div>
-            <div><span class="muted">Seguidores</span><b id="live-followers"></b></div>
-            <div><span class="muted">Tempo</span><b id="live-time"></b></div>
-          </div>
-          <div class="progress"><div id="live-progress"></div></div>
-          <div class="chat" id="chat"></div>
-          <button class="btn ghost" data-action="stop-live">Encerrar live</button>
+        <div class="stream-stats">
+          <div><span class="muted">Espectadores</span><b>👁 <span id="live-viewers">0</span></b></div>
+          <div><span class="muted">Ganhos</span><b class="txt-good" id="live-earned"></b></div>
+          <div><span class="muted">Seguidores</span><b id="live-followers"></b></div>
+          <div><span class="muted">Tempo</span><b id="live-time"></b></div>
         </div>
+        <div class="progress"><div id="live-progress"></div></div>
+        <div class="live-actions">
+          <button class="btn small" id="btn-play" data-action="toggle-play">🎮 Jogar eu mesmo</button>
+          <button class="btn small ghost" data-action="stop-live">Encerrar live</button>
+        </div>
+        <div class="chat" id="chat"></div>
       </div>
+
+      <div class="card" id="last-live" hidden></div>
     </section>
 
     <section id="tab-dev" hidden>
@@ -209,6 +245,7 @@
           <div class="progress"><div id="lab-bar"></div></div>
           <button class="btn ghost" data-action="stop-lab">Parar (a energia que sobrar volta)</button>
         </div>
+        <div class="card" id="server-card"></div>
         <div class="card" id="brain-card"></div>
       </div>
     </section>
@@ -242,6 +279,8 @@
   <script src="js/lab-data.js"></script>
   <script src="js/lab.js"></script>
   <script src="js/draw.js"></script>
+  <script src="js/sim.js"></script>
+  <script src="js/events.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

@@ -7,7 +7,8 @@ const AI_AUTO_LEVEL = 5;      // nível da IA para o modo automático
 const FINISH_DEVS = 100000;   // devs usando sua linguagem para zerar o jogo
 
 const AI_LAB_COST = 20000;
-const BRAIN_COST = 300000;
+const BRAIN_COST = 50000;          // dados para treinar (o servidor é comprado na Loja)
+const SERVER_SLOTS = 8;            // aceleradoras que cabem no rack
 const HACKATHON_COST = 50000;
 const CLOUD_PRICE = { ai: 3000, brain: 20000 };  // por hora de treino
 

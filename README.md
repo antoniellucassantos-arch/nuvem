@@ -11,7 +11,8 @@ Abra o `index.html` no navegador. Não precisa instalar nada.
    - o soquete do processador precisa ser o mesmo da placa-mãe;
    - a memória precisa ser do tipo que a placa aceita (DDR4 ou DDR5);
    - a fonte precisa aguentar o consumo do PC. E cuidado com a fonte genérica… 💥
-3. **Live:** escolha um jogo e a duração. Quanto mais FPS, mais espectadores, seguidores e doações.
+3. **Live:** na mesa do streamer, clique no **StreamZinho** no monitor, escolha o jogo e a duração. O jogo aparece rodando na tela, no FPS que o seu PC aguenta. Clique em **Jogar eu mesmo** (ou use Espaço, setas e clique) para jogar de verdade: mandar bem aumenta o público. Webcam, ring light, microfone, stream deck, monitores maiores e as placas de seguidores aparecem no cenário.
+   - **Eventos:** raids, clipes viralizando, o gato no teclado, patrocínios, haters, queda de luz (o nobreak salva), internet oscilando (o roteador salva), PC esquentando e a **fonte genérica, que pode explodir a qualquer momento** (e às vezes levar outra peça junto).
 4. **Dormir:** recupera a energia e passa o dia. Jogar sempre o mesmo jogo cansa o público.
 5. **Objetivos:** complete metas para ganhar prêmios em dinheiro.
 
@@ -33,7 +34,7 @@ Com 3 jogos lançados e Programação nível 5, monte um laboratório e treine s
 
 ### Fase 4: sua linguagem e sua própria IA (aba Lab)
 
-Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo das palavras e tipos), desenvolva as 5 etapas do compilador e lance para o mundo: ela vira a melhor ferramenta da aba Dev e ganha devs todo dia. Depois, compre um supercomputador, treine sua própria IA de conversa, lance para o público e converse com ela.
+Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo das palavras e tipos), desenvolva as 5 etapas do compilador e lance para o mundo: ela vira a melhor ferramenta da aba Dev e ganha devs todo dia. Depois, monte um **servidor de IA com super peças** (Loja → Servidor de IA: rack com refrigeração líquida, AMD EPYC e aceleradoras NVIDIA A100/H100/H200/B200 e AMD Instinct), treine sua própria IA de conversa, lance para o público e converse com ela.
 
 **Para zerar:** sua IA no nível 10 e 100 mil devs usando sua linguagem.
 
@@ -43,7 +44,9 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 - `css/style.css`: visual
 - `js/data.js`: peças, jogos, objetivos e mensagens do chat
 - `js/game.js`: lógica do jogo (montagem, loja, lives)
-- `js/draw.js`: desenhos em SVG (gabinete, peças, miniaturas da loja e capas dos jogos)
+- `js/draw.js`: desenhos em SVG (gabinete, peças, rack do servidor, miniaturas da loja e capas dos jogos)
+- `js/sim.js`: simulação jogável que aparece no monitor durante a live
+- `js/events.js`: eventos aleatórios (fonte explodindo, raids, queda de luz...)
 - `js/dev-data.js`: dados da Fase 2 (ferramentas, gêneros, temas, cursos)
 - `js/dev.js`: lógica da Fase 2 (estudar, programar, lançar e vender)
 - `js/lab-data.js` e `js/lab.js`: Fases 3 e 4 (IA, linguagem e sua própria IA)

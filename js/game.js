@@ -22,6 +22,7 @@ let booting = false;
 let shopFilter = 'cpu';
 let selectedGame = 'fogo';
 let selectedHours = 1;
+let streamAppOpen = false;   // janela do StreamZinho aberta no monitor
 
 /* ---------- Salvamento ---------- */
 
@@ -57,6 +58,7 @@ function newState() {
     ai: null,       // IA criadora de jogos
     lang: null,     // sua linguagem de programação
     brain: null,    // sua própria IA
+    server: { rack: false, cpu: false, gpus: [] },   // servidor de IA (super peças)
     finished: false,
   };
 }
@@ -139,6 +141,9 @@ function buyPart(id) {
   if (p.cat === 'gear') {
     if (S.gear.includes(id)) return;
     S.gear.push(id);
+  } else if (p.cat === 'server') {
+    if (!serverCanBuy(p)) return;
+    serverInstall(p);
   } else if (p.cat === 'case') {
     if (S.cases.includes(id)) return;
     S.cases.push(id);
@@ -147,7 +152,7 @@ function buyPart(id) {
     S.inventory.push({ uid: S.nextUid++, id });
   }
   S.money -= p.price;
-  toast(p.cat === 'gear' || p.cat === 'case' ? `🛒 ${p.name} comprado!` : `🛒 ${p.name} comprado! Instale na aba Montagem.`);
+  toast(['gear', 'case', 'server'].includes(p.cat) ? `🛒 ${p.name} comprado!` : `🛒 ${p.name} comprado! Instale na aba Montagem.`);
   changed();
 }
 
@@ -193,7 +198,11 @@ function powerOn() {
     lines.push('...nada acontece. Sem fonte não tem energia!');
   } else {
     lines.push('Ventoinhas girando... 🌀');
-    if (b.ok) {
+    if (b.ok && b.parts.psu.generic && Math.random() < 0.03) {
+      lines.push('💥 PUF! Cheiro de queimado...');
+      b.ok = false;
+      b.boom = true;
+    } else if (b.ok) {
       lines.push(
         `CPU: ${b.parts.cpu.name} ........ OK`,
         `Memória: ${b.ram}GB ${b.parts.ram.type} ........ OK`,
@@ -216,6 +225,7 @@ function powerOn() {
     out.textContent += line + '\n';
     if (i === lines.length - 1) {
       booting = false;
+      if (b.boom) psuBoom();
       S.pcOn = b.ok;
       if (b.ok) toast('🟢 PC ligado! Agora vá para a aba Live.');
       changed();
@@ -293,7 +303,9 @@ function startLive() {
     psu: b.parts.psu,
     psuUid: S.build.psu,
     mult: game.pop * gearMult() * novelty(game.id) * [0, 0.9, 1, 1.1][b.storage],
+    playBonus: 0, raid: 0, lag: 0,
   };
+  streamAppOpen = true;
 
   $('#chat').innerHTML = '';
   $('#live-game').textContent = `${game.emoji} ${game.name}`;
@@ -302,19 +314,14 @@ function startLive() {
   $('#live-fps').className = 'live-fps ' + live.q.cls;
   addChat('Sistema', `A live de ${game.name} começou!`, 'sys');
   render();
+  startSim(game, fps);
   updateLiveView();
   live.timer = setInterval(liveTick, TICK_MS);
 }
 
-// Fundo animado da live com as cores e os "sprites" do jogo, mais a câmera do streamer.
-function setLiveScene(game) {
-  const [c1, c2] = game.colors || ['#3a2a7a', '#0b0d14'];
-  const screen = $('.stream-screen');
-  screen.style.setProperty('--c1', c1);
-  screen.style.setProperty('--c2', c2);
-  const sprites = [game.emoji, game.emoji2 || game.emoji];
-  $('#live-scene').innerHTML = Array.from({ length: 7 }, (_, i) =>
-    `<span class="sprite" style="top:${10 + Math.random() * 70}%;animation-duration:${6 + Math.random() * 8}s;animation-delay:-${Math.random() * 10}s;font-size:${1.4 + Math.random() * 1.8}rem">${sprites[i % 2]}</span>`).join('');
+// Câmera do streamer por cima do jogo (se você comprou webcam).
+function setLiveScene() {
+  $('#event-banner').hidden = true;
   const cam = $('#live-cam');
   cam.hidden = !S.gear.includes('e2');
   cam.classList.toggle('lit', S.gear.includes('e3'));
@@ -328,7 +335,10 @@ function liveTick() {
   const ramp = Math.min(1, L.tick / 4);
   // Público cresce mais devagar que os seguidores (expoente 0.6), para não virar bola de neve.
   const base = 5 + 3 * Math.pow(S.followers, 0.6);
-  L.viewers = Math.max(0, Math.round(base * L.mult * L.q.mult * ramp * rand(0.8, 1.2)));
+  let viewers = base * L.mult * L.q.mult * ramp * rand(0.8, 1.2) * (1 + L.playBonus) + L.raid;
+  if (L.lag > 0) { viewers *= 0.5; L.lag--; }
+  L.raid *= 0.8;
+  L.viewers = Math.max(0, Math.round(viewers));
   L.peak = Math.max(L.peak, L.viewers);
 
   // Quanto maior o público, menos cada espectador rende (anúncios e inscrições diluem).
@@ -354,10 +364,14 @@ function liveTick() {
     if (L.viewers > 0 && Math.random() < 0.7) addChat(pick(NAMES), pick(pool));
   }
 
-  // Fonte genérica sobrecarregada pode explodir no meio da live.
-  if (L.psu.generic && L.watts / L.psu.watts > 0.75 && Math.random() < 0.03) {
-    addChat('Sistema', '💥 BOOM! A fonte genérica explodiu!', 'sys');
+  // Fonte genérica pode explodir a qualquer momento (sobrecarregada é bem pior).
+  if (psuExplodes(checkBuild())) {
+    addChat('Sistema', psuBoom(), 'sys');
     endLive('psu');
+    return;
+  }
+  if (liveEvent(L) === 'blackout') {
+    endLive('blackout');
     return;
   }
 
@@ -369,6 +383,7 @@ function endLive(reason) {
   const L = live;
   clearInterval(L.timer);
   live = null;
+  stopSim();
 
   const hours = L.tick / TICKS_PER_HOUR;
   const bill = Math.round(L.watts * hours / 1000 * KWH_PRICE * 100) / 100;
@@ -381,12 +396,7 @@ function endLive(reason) {
   if (L.game.id === 'cyber' && L.fps >= 60) S.stats.cyber60 = true;
   if (L.game.own) streamedOwnGame(L.game.gameId, L.peak);
 
-  if (reason === 'psu') {
-    S.inventory = S.inventory.filter(i => i.uid !== L.psuUid);
-    S.build.psu = null;
-    S.pcOn = false;
-    toast('💥 Sua fonte explodiu! Compre uma fonte de qualidade.', 'bad');
-  }
+  if (reason === 'blackout') S.pcOn = false;
 
   S.lastLive = {
     game: `${L.game.emoji} ${L.game.name}`,
@@ -416,6 +426,7 @@ function updateLiveView() {
   const L = live;
   const mins = L.tick * 10;
   $('#live-viewers').textContent = num(L.viewers);
+  $('#live-viewers-top').textContent = num(L.viewers);
   $('#live-earned').textContent = money(L.earned);
   $('#live-followers').textContent = '+' + num(L.followers);
   $('#live-time').textContent = `${Math.floor(mins / 60)}h${String(mins % 60).padStart(2, '0')}`;
@@ -431,6 +442,7 @@ function sleep() {
   toast(`😴 Você dormiu. Bom dia, dia ${S.day}!`);
   dailySales();
   labDaily();
+  dailyEvent();
   changed();
 }
 
@@ -470,7 +482,8 @@ function partSpec(p) {
     case 'gpu': return `Força ${p.score} · ${p.watts}W`;
     case 'storage': return `${{ hdd: 'HD', ssd: 'SSD SATA', nvme: 'SSD NVMe' }[p.kind]} · Velocidade ${'★'.repeat(p.speed)}${'☆'.repeat(3 - p.speed)}`;
     case 'psu': return `${p.watts}W${p.generic ? ' · ⚠️ genérica, pode explodir' : ''}`;
-    case 'gear': return `+${Math.round((p.mult - 1) * 100)}% espectadores`;
+    case 'gear': return p.desc || `+${Math.round((p.mult - 1) * 100)}% espectadores`;
+    case 'server': return p.kind === 'gpu' ? `Poder de IA ${p.compute} · ${p.watts}W` : p.kind === 'rack' ? 'Obrigatório: onde tudo é instalado' : 'Obrigatório: o cérebro do servidor';
     case 'case': return `${p.look.fans} ventoinha${p.look.fans > 1 ? 's' : ''}${p.look.rgb ? ' RGB' : ''}`
       + (p.mult > 1 ? ` · +${Math.round((p.mult - 1) * 100)}% espectadores` : ' · veio de brinde');
   }
@@ -552,7 +565,8 @@ function renderBuild() {
 }
 
 function renderShop() {
-  $('#shop-filters').innerHTML = Object.keys(CATS).map(cat =>
+  if (shopFilter === 'server' && !S.phase3) shopFilter = 'cpu';
+  $('#shop-filters').innerHTML = Object.keys(CATS).filter(cat => cat !== 'server' || S.phase3).map(cat =>
     `<button class="chip-btn ${cat === shopFilter ? 'active' : ''}" data-action="filter" data-cat="${cat}">${CAT_ICONS[cat]} ${CATS[cat]}</button>`,
   ).join('');
 
@@ -562,7 +576,11 @@ function renderShop() {
     const count = S.inventory.filter(i => i.id === p.id).length;
     let btn;
     if (locked) btn = `<button class="btn small" disabled>🔒 ${num(p.unlock)} seguidores</button>`;
-    else if (p.cat === 'case' && owned) {
+    else if (p.cat === 'server') {
+      const why = serverBlock(p);
+      btn = why ? `<button class="btn small" disabled>${why}</button>`
+        : `<button class="btn small" data-action="buy" data-id="${p.id}" ${busy() || S.money < p.price ? 'disabled' : ''}>Comprar</button>`;
+    } else if (p.cat === 'case' && owned) {
       btn = S.caseId === p.id
         ? '<button class="btn small" disabled>✔ Em uso</button>'
         : `<button class="btn small ghost" data-action="use-case" data-id="${p.id}" ${busy() ? 'disabled' : ''}>Usar este</button>`;
@@ -580,13 +598,19 @@ function renderShop() {
 }
 
 function renderLive() {
-  $('#live-running').hidden = !live;
-  $('#live-setup').hidden = !!live;
-  if (live) return;
-
   const b = checkBuild();
   const ready = S.pcOn && b.ok;
-  $('#live-warning').hidden = ready;
+
+  // O que aparece no monitor: sem sinal, área de trabalho (InfoOS) ou a live.
+  $('#screen-off').hidden = ready || !!live;
+  $('#screen-os').hidden = !ready || !!live;
+  $('#screen-live').hidden = !live;
+  $('#live-running').hidden = !live;
+  $('#win-stream').hidden = !streamAppOpen;
+  $('#os-hint').hidden = streamAppOpen;
+  $('#os-clock').textContent = `Dia ${S.day} · ⚡${S.energy}`;
+  renderDesk(b);
+  if (live) return;
 
   $('#games').innerHTML = allGames().map(g => {
     const owned = ownsGame(g.id);
@@ -608,12 +632,12 @@ function renderLive() {
     btn.classList.toggle('active', Number(btn.dataset.h) === selectedHours);
     btn.disabled = S.energy < Number(btn.dataset.h) * ENERGY_PER_HOUR;
   });
-  $('#btn-live').disabled = !ready || !!dev || S.energy < selectedHours * ENERGY_PER_HOUR;
+  $('#btn-live').disabled = !ready || busy() || S.energy < selectedHours * ENERGY_PER_HOUR;
 
   const last = S.lastLive;
   $('#last-live').hidden = !last;
   if (last) {
-    const why = last.reason === 'psu' ? ' (a fonte explodiu 💥)' : last.reason === 'stopped' ? ' (encerrada antes)' : '';
+    const why = { psu: ' (a fonte explodiu 💥)', stopped: ' (encerrada antes)', blackout: ' (a luz caiu ⚡)' }[last.reason] || '';
     $('#last-live').innerHTML = `<h3>Resumo da última live${why}</h3>
       <div class="summary">
         <div><span class="muted">Jogo</span><b>${esc(last.game)}</b></div>
@@ -624,6 +648,29 @@ function renderLive() {
         <div><span class="muted">Conta de luz</span><b class="txt-bad">-${money(last.bill)}</b></div>
       </div>`;
   }
+}
+
+// Mesa do streamer: parede, monitor, webcam, ring light, microfone, stream deck e o PC.
+function renderDesk(b) {
+  const has = id => S.gear.includes(id);
+  const monitor = has('e11') ? 'ultra' : has('e10') ? 'big' : 'basic';
+  $('#desk').className = `desk monitor-${monitor}${has('e6') ? ' greenscreen' : ''}`;
+  $('#desk-ring').hidden = !has('e3');
+  $('#desk-cam').hidden = !has('e2');
+  $('#desk-chair').hidden = !has('e5');
+
+  const plaques = [[1e7, 'diamond', '💎 10M'], [1e6, 'gold', '🥇 1M'], [1e5, 'silver', '🥈 100K']]
+    .filter(([n]) => S.followers >= n).map(([, cls, label]) => `<div class="plaque ${cls}">▶ ${label}</div>`).join('');
+  $('#desk-plaques').innerHTML = plaques;
+
+  const c = PART_BY_ID[S.caseId] || PART_BY_ID.k1;
+  $('#desk-items').innerHTML = `
+    ${has('e4') ? '<div class="mic-arm" title="HyperX QuadCast S">🎙️</div>' : has('e1') ? '<div class="desk-mic" title="Fifine K669">🎙️</div>' : ''}
+    <div class="keyboard"></div>
+    <div class="mouse"></div>
+    ${has('e7') ? '<div class="streamdeck" title="Stream Deck"></div>' : ''}
+    <svg class="case mini-case ${S.pcOn ? 'on' : ''} ${c.look.theme === 'light' ? 'case-light' : ''}" viewBox="0 0 420 460"
+      role="img" aria-label="Seu PC">${caseMarkup(b, true)}</svg>`;
 }
 
 function renderGoals() {
@@ -656,6 +703,9 @@ document.addEventListener('click', e => {
     case 'remove': return removePart(d.slot);
     case 'filter': shopFilter = d.cat; return renderShop();
     case 'use-case': return useCase(d.id);
+    case 'open-app': streamAppOpen = true; return renderLive();
+    case 'close-app': streamAppOpen = false; return renderLive();
+    case 'toggle-play': return toggleManual();
     case 'shop-cat': shopFilter = d.cat; renderShop(); return showTab('shop');
     case 'power': return powerOn();
     case 'pick-game': selectedGame = d.id; return renderLive();

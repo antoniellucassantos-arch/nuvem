@@ -9,10 +9,11 @@ const CATS = {
   psu: 'Fonte',
   case: 'Gabinete',
   gear: 'Equipamento de live',
+  server: 'Servidor de IA',
 };
 
 const CAT_ICONS = {
-  cpu: '🧠', mobo: '🟩', ram: '📏', gpu: '🎮', storage: '💾', psu: '🔌', case: '🗄️', gear: '🎙️',
+  cpu: '🧠', mobo: '🟩', ram: '📏', gpu: '🎮', storage: '💾', psu: '🔌', case: '🗄️', gear: '🎙️', server: '🏢',
 };
 
 // Encaixes do gabinete, na ordem em que aparecem na montagem.
@@ -81,18 +82,31 @@ const PARTS = [
   { id: 'e5', cat: 'gear', name: 'Cadeira DT3 Sports', price: 1300, unlock: 300, mult: 1.06 },
   { id: 'e6', cat: 'gear', name: 'Elgato Green Screen', price: 900, unlock: 1000, mult: 1.12 },
   { id: 'e7', cat: 'gear', name: 'Elgato Stream Deck MK.2', price: 1200, unlock: 1500, mult: 1.1 },
+  { id: 'e8', cat: 'gear', name: 'Nobreak APC 1500VA', price: 900, unlock: 50, mult: 1, desc: 'Segura a live quando a luz cai' },
+  { id: 'e9', cat: 'gear', name: 'Roteador TP-Link Wi-Fi 6', price: 450, unlock: 50, mult: 1.02, desc: 'A internet não oscila mais' },
+  { id: 'e10', cat: 'gear', name: 'Monitor LG UltraGear 27" 144Hz', price: 1600, unlock: 300, mult: 1.04, monitor: 'big' },
+  { id: 'e11', cat: 'gear', name: 'Monitor Samsung Odyssey G9 49" Ultrawide', price: 7000, unlock: 3000, mult: 1.08, monitor: 'ultra' },
+
+  // Servidor de IA (Fase 3 em diante): as super peças para criar sua própria IA
+  { id: 'sv0', cat: 'server', kind: 'rack', name: 'Rack 42U com refrigeração líquida', price: 80000, unlock: 0 },
+  { id: 'sv1', cat: 'server', kind: 'cpu', name: 'AMD EPYC 9654 (96 núcleos)', price: 60000, unlock: 0 },
+  { id: 'sv2', cat: 'server', kind: 'gpu', name: 'NVIDIA A100 80GB', price: 60000, unlock: 0, compute: 40, watts: 400 },
+  { id: 'sv3', cat: 'server', kind: 'gpu', name: 'AMD Instinct MI300X', price: 120000, unlock: 0, compute: 75, watts: 750 },
+  { id: 'sv4', cat: 'server', kind: 'gpu', name: 'NVIDIA H100 80GB', price: 150000, unlock: 0, compute: 90, watts: 700 },
+  { id: 'sv5', cat: 'server', kind: 'gpu', name: 'NVIDIA H200 141GB', price: 250000, unlock: 0, compute: 130, watts: 700 },
+  { id: 'sv6', cat: 'server', kind: 'gpu', name: 'NVIDIA B200', price: 400000, unlock: 0, compute: 200, watts: 1000 },
 ];
 
 // cpu/gpu/ram = requisitos para rodar a 60 FPS. pop = popularidade do jogo.
 const GAMES = [
-  { id: 'paciencia', colors: ['#0f5132', '#1b8a5a'], emoji: '🃏', name: 'Paciência Ultra', price: 0, cpu: 5, gpu: 3, ram: 4, pop: 0.5 },
-  { id: 'fogo', colors: ['#7a1f00', '#ff7a1a'], emoji: '🔥', name: 'Fogo Livre', price: 0, cpu: 12, gpu: 10, ram: 4, pop: 1.1 },
-  { id: 'blocks', colors: ['#2d5a27', '#7cb342'], emoji: '⛏️', name: 'Mine Blocks', price: 60, cpu: 10, gpu: 8, ram: 4, pop: 1.0 },
-  { id: 'moba', colors: ['#1a237e', '#7c4dff'], emoji: '🧙', name: 'Liga das Lendas', price: 0, cpu: 15, gpu: 12, ram: 8, pop: 1.3 },
-  { id: 'cs', colors: ['#3e2723', '#c49a45'], emoji: '🔫', name: 'Contra-Ataque 2', price: 0, cpu: 25, gpu: 25, ram: 8, pop: 1.5 },
-  { id: 'gta', colors: ['#0d3b66', '#f95738'], emoji: '🚗', name: 'GTZ: Cidade Grande', price: 120, cpu: 35, gpu: 45, ram: 16, pop: 2.0 },
-  { id: 'cyber', colors: ['#2b0a3d', '#f3e600'], emoji: '🤖', name: 'Cyberfuturo 2099', price: 250, cpu: 60, gpu: 80, ram: 16, pop: 2.6 },
-  { id: 'simsim', colors: ['#0b3954', '#bfd7ea'], emoji: '🌀', name: 'Simulador de Simulador', price: 400, cpu: 100, gpu: 130, ram: 32, pop: 3.5 },
+  { id: 'paciencia', sim: 'runner', hero: '🃏', foe: '♠️', colors: ['#0f5132', '#1b8a5a'], emoji: '🃏', name: 'Paciência Ultra', price: 0, cpu: 5, gpu: 3, ram: 4, pop: 0.5 },
+  { id: 'fogo', sim: 'shooter', hero: '🔥', foe: '🪖', colors: ['#7a1f00', '#ff7a1a'], emoji: '🔥', name: 'Fogo Livre', price: 0, cpu: 12, gpu: 10, ram: 4, pop: 1.1 },
+  { id: 'blocks', sim: 'runner', hero: '⛏️', foe: '🟩', colors: ['#2d5a27', '#7cb342'], emoji: '⛏️', name: 'Mine Blocks', price: 60, cpu: 10, gpu: 8, ram: 4, pop: 1.0 },
+  { id: 'moba', sim: 'shooter', hero: '🧙', foe: '👹', colors: ['#1a237e', '#7c4dff'], emoji: '🧙', name: 'Liga das Lendas', price: 0, cpu: 15, gpu: 12, ram: 8, pop: 1.3 },
+  { id: 'cs', sim: 'shooter', hero: '🔫', foe: '🥷', colors: ['#3e2723', '#c49a45'], emoji: '🔫', name: 'Contra-Ataque 2', price: 0, cpu: 25, gpu: 25, ram: 8, pop: 1.5 },
+  { id: 'gta', sim: 'racer', hero: '🚗', foe: '🚓', colors: ['#0d3b66', '#f95738'], emoji: '🚗', name: 'GTZ: Cidade Grande', price: 120, cpu: 35, gpu: 45, ram: 16, pop: 2.0 },
+  { id: 'cyber', sim: 'racer', hero: '🏍️', foe: '🚙', colors: ['#2b0a3d', '#f3e600'], emoji: '🤖', name: 'Cyberfuturo 2099', price: 250, cpu: 60, gpu: 80, ram: 16, pop: 2.6 },
+  { id: 'simsim', sim: 'runner', hero: '🌀', foe: '🧊', colors: ['#0b3954', '#bfd7ea'], emoji: '🌀', name: 'Simulador de Simulador', price: 400, cpu: 100, gpu: 130, ram: 32, pop: 3.5 },
 ];
 
 const GOALS = [

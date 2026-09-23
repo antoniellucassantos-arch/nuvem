@@ -164,10 +164,10 @@ function drawStorage(st, mobo) {
 
 /* ---------- Gabinete completo ---------- */
 
-function renderCase(b) {
+function caseMarkup(b, mini = false) {
   const { cpu, mobo, ram, gpu, storage, psu } = b.parts;
   const c = PART_BY_ID[S.caseId] || PART_BY_ID.k1;
-  const out = [drawShell(c)];
+  const out = [drawShell(c, mini)];
 
   out.push(mobo ? drawMobo(mobo) : svgEmpty(40, 40, 250, 270, 'mobo', CATS.mobo, 290));
 
@@ -199,9 +199,13 @@ function renderCase(b) {
 
   // Reflexo do vidro lateral
   out.push('<path class="glass" d="M22 22 H180 L60 438 H22 Z"/>');
+  return out.join('');
+}
 
+function renderCase(b) {
+  const c = PART_BY_ID[S.caseId] || PART_BY_ID.k1;
   const svg = $('#case');
-  svg.innerHTML = out.join('');
+  svg.innerHTML = caseMarkup(b);
   svg.classList.toggle('on', S.pcOn);
   svg.classList.toggle('case-light', c.look.theme === 'light');
   svg.classList.toggle('case-rgb', c.look.rgb);
@@ -236,4 +240,41 @@ function gameCover(g, cls = '') {
   return `<div class="cover ${cls}" style="--c1:${c1};--c2:${c2}" aria-hidden="true">
     <span class="cover-emoji">${g.emoji}</span>${g.emoji2 ? `<span class="cover-emoji small">${g.emoji2}</span>` : ''}
   </div>`;
+}
+
+/* ---------- Rack do servidor de IA ---------- */
+
+function drawRack(sv) {
+  const out = ['<rect class="rack-frame" x="6" y="6" width="208" height="368" rx="8"/>',
+    '<rect class="rack-inside" x="18" y="18" width="184" height="344" rx="4"/>'];
+  if (!sv.rack) {
+    out.push(svgEmpty(18, 18, 184, 344, 'server', 'Rack'));
+    return out.join('');
+  }
+  out.push('<path class="rack-rail" d="M24 20 V360 M196 20 V360"/>');
+  // Processador EPYC (2U no topo)
+  if (sv.cpu) {
+    out.push(`<g><title>AMD EPYC 9654</title><rect class="rack-unit" x="28" y="24" width="164" height="30" rx="3"/>
+      <text class="rack-label" x="40" y="43">EPYC 9654</text>
+      ${[150, 160, 170].map(x => `<circle class="rack-led" cx="${x}" cy="39" r="3"/>`).join('')}</g>`);
+  } else {
+    out.push(svgEmpty(28, 24, 164, 30, 'server', 'EPYC'));
+  }
+  // Aceleradoras
+  for (let i = 0; i < SERVER_SLOTS; i++) {
+    const y = 62 + i * 37;
+    const id = sv.gpus[i];
+    if (id) {
+      const p = PART_BY_ID[id];
+      out.push(`<g><title>${p.name}</title><rect class="rack-unit gpu-unit" x="28" y="${y}" width="164" height="31" rx="3"/>
+        <path class="rack-vents" d="${Array.from({ length: 10 }, (_, k) => `M${110 + k * 5} ${y + 7} V${y + 24}`).join(' ')}"/>
+        <text class="rack-label" x="40" y="${y + 20}">${p.name.replace(/^(NVIDIA|AMD) /, '').replace(/ \d+GB$/, '')}</text>
+        <circle class="rack-led" style="animation-delay:-${(i * 0.37).toFixed(2)}s" cx="182" cy="${y + 15}" r="3"/></g>`);
+    } else if (i === sv.gpus.length) {
+      out.push(svgEmpty(28, y, 164, 31, 'server', 'Aceleradora'));
+    } else {
+      out.push(`<rect class="rack-empty" x="28" y="${y}" width="164" height="31" rx="3"/>`);
+    }
+  }
+  return out.join('');
 }

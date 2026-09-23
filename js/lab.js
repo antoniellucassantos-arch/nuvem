@@ -36,6 +36,39 @@ function checkLabUnlocks() {
   }
 }
 
+/* ---------- Servidor de IA (super peças) ---------- */
+
+// Motivo para não poder comprar a peça de servidor (ou null se pode).
+function serverBlock(p) {
+  const sv = S.server;
+  if (!S.phase3) return '🔒 Fase 3';
+  if (p.kind === 'rack') return sv.rack ? '✔ Instalado' : null;
+  if (!sv.rack) return 'Compre o rack antes';
+  if (p.kind === 'cpu') return sv.cpu ? '✔ Instalado' : null;
+  return sv.gpus.length >= SERVER_SLOTS ? `Rack cheio (${SERVER_SLOTS}/${SERVER_SLOTS})` : null;
+}
+
+const serverCanBuy = p => !serverBlock(p);
+
+function serverInstall(p) {
+  if (p.kind === 'rack') S.server.rack = true;
+  if (p.kind === 'cpu') S.server.cpu = true;
+  if (p.kind === 'gpu') S.server.gpus.push(p.id);
+}
+
+const serverReady = () => S.server.rack && S.server.cpu && S.server.gpus.length > 0;
+const serverCompute = () => (S.server.rack && S.server.cpu ? S.server.gpus.reduce((t, id) => t + PART_BY_ID[id].compute, 0) : 0);
+const serverWatts = () => (S.server.cpu ? 400 : 0) + S.server.gpus.reduce((t, id) => t + PART_BY_ID[id].watts, 0);
+
+// Tokens por 10 minutos de treino.
+function trainSpeed(kind) {
+  const b = checkBuild();
+  const obj = kind === 'ai' ? S.ai : S.brain;
+  const cloud = obj && obj.cloud ? 3 : 1;
+  if (kind === 'ai') return ((b.gpu / 20) * (1 + b.ram / 64) * 2 + serverCompute() * 0.15) * cloud;
+  return serverCompute() * 0.3 * (1 + aiLevel() * 0.1) * (S.lang && S.lang.released ? 1.2 : 1) * cloud;
+}
+
 /* ---------- Fase 3: IA criadora de jogos ---------- */
 
 function createAi() {
@@ -183,7 +216,8 @@ function hackathon() {
 
 function createBrain() {
   if (busy() || S.brain || !S.lang || !S.lang.released) return;
-  if (S.money < BRAIN_COST) return toast('Dinheiro insuficiente para o supercomputador.', 'bad');
+  if (!serverReady()) return toast('Você precisa de um servidor de IA: rack, EPYC e pelo menos uma aceleradora (Loja).', 'bad');
+  if (S.money < BRAIN_COST) return toast('Dinheiro insuficiente para comprar os dados de treino.', 'bad');
   S.money -= BRAIN_COST;
   S.brain = { name: cleanName(labDraft.brainName, pick(BRAIN_NAME_IDEAS)), xp: 0, epoch: 0, cloud: false, released: false, users: 0 };
   toast(`🧠 ${S.brain.name} foi criada! Hora de treinar.`, 'goal');
@@ -221,6 +255,7 @@ function startTraining(kind, hours) {
   if (!S.pcOn || !b.ok) return toast('Ligue o PC na aba Montagem para treinar!', 'bad');
   const table = kind === 'ai' ? AI_LEVELS : BRAIN_LEVELS;
   if (levelFrom(obj.xp, table) >= 10) return toast('Já está no nível máximo!');
+  if (kind === 'brain' && !serverReady()) return toast('Sua IA treina no servidor de IA. Compre as peças na Loja!', 'bad');
   const energy = hours * ENERGY_PER_HOUR;
   const cloud = obj.cloud ? CLOUD_PRICE[kind] * hours : 0;
   if (S.energy < energy) return toast('Você está cansado demais. Vá dormir! 😴', 'bad');
@@ -260,13 +295,17 @@ function labTick() {
   lab.tick++;
   const b = checkBuild();
 
+  if (lab.kind !== 'gen' && psuExplodes(b)) {
+    lab.lines.push(psuBoom());
+    return endLab();
+  }
+
   if (lab.kind === 'ai' || lab.kind === 'brain') {
     const isAi = lab.kind === 'ai';
     const obj = isAi ? S.ai : S.brain;
     const table = isAi ? AI_LEVELS : BRAIN_LEVELS;
     const before = levelFrom(obj.xp, table);
-    let pts = (b.gpu / 20) * (1 + b.ram / 64) * 2 * (obj.cloud ? 3 : 1) * rand(0.8, 1.2);
-    if (!isAi) pts *= (1 + aiLevel() * 0.1) * (S.lang && S.lang.released ? 1.2 : 1);
+    const pts = trainSpeed(lab.kind) * rand(0.8, 1.2);
     obj.xp += pts;
     obj.epoch++;
     const loss = 2.4 * Math.exp(-obj.xp / (isAi ? 3000 : 12000)) + 0.05 + rand(0, 0.12);
@@ -366,6 +405,11 @@ function labDaily() {
     S.money += income;
     toast(`🧬 ${S.lang.name}: +${num(gained)} devs (+${money(income)} em cursos e patrocínios)`);
   }
+  if (serverWatts() > 0) {
+    const bill = Math.round(serverWatts() * 24 / 1000 * KWH_PRICE);
+    S.money -= bill;
+    toast(`🏢 Conta de luz do servidor de IA: -${money(bill)}`);
+  }
   if (S.brain && S.brain.released) {
     const lvl = brainLevel();
     const gained = Math.round((1000 * lvl * lvl + S.brain.users * 0.1) * rand(0.8, 1.2) / (1 + S.brain.users / 5e7));
@@ -447,7 +491,7 @@ function renderAiTab() {
 
   const lvl = aiLevel();
   const b = checkBuild();
-  const speed = (b.gpu / 20) * (1 + b.ram / 64) * 2 * (S.ai.cloud ? 3 : 1);
+  const speed = trainSpeed('ai');
   $('#ai-main').innerHTML = `<div class="card-head"><h2>🤖 ${S.ai.name}</h2><span class="badge q-ok">Nível ${lvl}/10</span></div>
     ${levelBar(S.ai.xp, AI_LEVELS)}
     <div class="specs">
@@ -459,7 +503,9 @@ function renderAiTab() {
     <h3>Treinar</h3>
     ${cloudToggle('ai', S.ai)}
     <div class="chips">${trainButtons('ai', S.ai, AI_LEVELS)}</div>
-    <p class="muted">Dica: placa de vídeo mais forte e mais RAM = treino mais rápido. Nível ${PHASE4_AI} libera a Fase 4.</p>`;
+    <p class="muted">Dica: placa de vídeo mais forte e mais RAM = treino mais rápido.
+    ${serverCompute() ? `Seu servidor de IA ajuda: +${Math.round(serverCompute() * 0.15)} por 10 min.` : 'Um servidor de IA (na Loja) também ajuda.'}
+    Nível ${PHASE4_AI} libera a Fase 4.</p>`;
 
   const chip = (key, val, label) =>
     `<button class="chip-btn ${labDraft[key] === val ? 'active' : ''}" data-action="lab-draft" data-key="${key}" data-val="${val}">${label}</button>`;
@@ -553,22 +599,46 @@ function renderLabTab() {
           🏆 Fazer um hackathon (${money(HACKATHON_COST)} · ⚡20)</button>` : ''}`;
   }
 
+  // Servidor de IA
+  const sv = S.server;
+  $('#server-card').innerHTML = `<div class="card-head"><h2>🏢 Servidor de IA</h2>
+      <span class="badge ${serverReady() ? 'q-good' : 'q-low'}">${serverReady() ? 'Pronto' : 'Incompleto'}</span></div>
+    <div class="server-wrap">
+      <svg class="rack ${lab && lab.kind === 'brain' ? 'busy' : ''}" viewBox="0 0 220 380" role="img" aria-label="Rack do servidor">${drawRack(sv)}</svg>
+      <div>
+        <p>Sua própria IA é grande demais para um PC gamer. Ela treina num servidor com <b>super peças</b>, compradas na
+          <a href="#" data-action="shop-cat" data-cat="server">Loja → Servidor de IA</a>.</p>
+        <ul class="checklist">
+          <li>${sv.rack ? '✅' : '⬜'} Rack 42U com refrigeração líquida</li>
+          <li>${sv.cpu ? '✅' : '⬜'} Processador AMD EPYC</li>
+          <li>${sv.gpus.length ? '✅' : '⬜'} Aceleradoras de IA (${sv.gpus.length}/${SERVER_SLOTS})</li>
+        </ul>
+        <div class="specs">
+          <div><span class="muted">Poder de IA</span><b>${serverCompute()}</b></div>
+          <div><span class="muted">Consumo</span><b>${num(serverWatts())}W</b></div>
+          <div><span class="muted">Luz por dia</span><b class="txt-bad">${money(Math.round(serverWatts() * 24 / 1000 * KWH_PRICE))}</b></div>
+        </div>
+      </div>
+    </div>`;
+
   // Sua própria IA
   const B = S.brain;
   if (!L || !L.released) {
     $('#brain-card').innerHTML = '<h2>🧠 Sua própria IA</h2><p class="muted">🔒 Lance sua linguagem primeiro. Sua IA vai ser escrita nela!</p>';
   } else if (!B) {
     $('#brain-card').innerHTML = `<h2>🧠 Criar sua própria IA</h2>
-      <p>Uma IA de conversa, igual às famosas, só que sua. Ela precisa de um supercomputador e de muito treino.</p>
+      <p>Uma IA de conversa, igual às famosas, só que sua. Ela treina no servidor de IA e precisa de muitos dados.</p>
+      ${serverReady() ? '' : '<p class="warning-text">⚠️ Monte o servidor de IA primeiro (veja acima).</p>'}
       <label class="field"><span>Nome da IA</span>
         <input type="text" id="brain-name" maxlength="24" placeholder="Ex.: ${BRAIN_NAME_IDEAS[0]}" value="${esc(labDraft.brainName)}"></label>
-      <button class="btn big" data-action="create-brain" ${lock || S.money < BRAIN_COST ? 'disabled' : ''}>🖥️ Comprar supercomputador (${money(BRAIN_COST)})</button>`;
+      <button class="btn big" data-action="create-brain" ${lock || !serverReady() || S.money < BRAIN_COST ? 'disabled' : ''}>🧠 Criar IA e comprar dados de treino (${money(BRAIN_COST)})</button>`;
   } else {
     const lvl = brainLevel();
     $('#brain-card').innerHTML = `<div class="card-head"><h2>🧠 ${B.name}</h2><span class="badge q-ok">${BRAIN_PARAMS[lvl]} parâmetros · nível ${lvl}/10</span></div>
       ${levelBar(B.xp, BRAIN_LEVELS)}
       <div class="specs">
         <div><span class="muted">Treino</span><b>${num(B.xp)} tokens</b></div>
+        <div><span class="muted">Velocidade</span><b>~${num(trainSpeed('brain'))} / 10 min</b></div>
         ${B.released ? `<div><span class="muted">Usuários</span><b>${num(B.users)}</b></div>
         <div><span class="muted">Renda por dia</span><b class="txt-good">${money(B.users * 0.08)}</b></div>` : ''}
       </div>
@@ -576,7 +646,7 @@ function renderLabTab() {
       <h3>Treinar</h3>
       ${cloudToggle('brain', B)}
       <div class="chips">${trainButtons('brain', B, BRAIN_LEVELS)}</div>
-      <p class="muted">Sua IA de jogos (nível ${aiLevel()}) ajuda no treino${L.released ? ', e escrever na sua linguagem também' : ''}.</p>
+      <p class="muted">Treina no servidor de IA: mais aceleradoras = mais rápido. Sua IA de jogos (nível ${aiLevel()}) e a sua linguagem também ajudam.</p>
       ${!B.released ? `<button class="btn launch" data-action="release-brain" ${lock || lvl < 3 ? 'disabled' : ''}>
         🌍 Lançar para o público ${lvl < 3 ? '(precisa do nível 3)' : ''}</button>` : ''}
       <h3>Converse com ${B.name}</h3>

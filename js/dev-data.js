@@ -51,6 +51,13 @@ const GENRE_COLORS = {
   rpg: ['#3f2d0e', '#d4a24c'], simulacao: ['#14532d', '#86efac'], tiro: ['#1f2937', '#9ca3af'], terror: ['#0a0a0a', '#7f1d1d'],
 };
 
+// Como os seus jogos aparecem na simulação da live.
+const GENRE_SIM = { plataforma: 'runner', puzzle: 'runner', corrida: 'racer', rpg: 'runner', simulacao: 'runner', tiro: 'shooter', terror: 'runner' };
+const THEME_SPRITES = {
+  espaco: ['🚀', '☄️'], zumbis: ['🧑', '🧟'], fazenda: ['👩‍🌾', '🐔'], medieval: ['🤺', '🐉'], escola: ['🧒', '📚'],
+  capivaras: ['🦫', '🐊'], futebol: ['🏃', '⚽'], ninjas: ['🥷', '🗡️'], dinossauros: ['🦕', '🦖'], cyberpunk: ['🦾', '🤖'],
+};
+
 const THEMES = [
   { id: 'espaco', name: 'Espaço', emoji: '🚀' },
   { id: 'zumbis', name: 'Zumbis', emoji: '🧟' },

@@ -147,6 +147,11 @@ function devTick() {
   const speed = (1 + b.cpu / 40 + (b.ram >= 16 ? 0.2 : 0)) * rand(0.8, 1.2);
   dev.tick++;
 
+  if (psuExplodes(b)) {
+    devLog(psuBoom(), 'bug');
+    return endDevSession();
+  }
+
   if (dev.mode === 'dev') {
     const pts = speed * 1.5;
     P.progress = Math.min(P.target, P.progress + pts);
@@ -323,6 +328,7 @@ function ownGameForLive(g) {
   return {
     id: 'my-' + g.id, gameId: g.id, own: true, name: g.name, price: 0,
     emoji: THEME_BY_ID[g.theme].emoji, emoji2: GENRE_BY_ID[g.genre].emoji, colors: GENRE_COLORS[g.genre],
+    sim: GENRE_SIM[g.genre], hero: GENRE_SIM[g.genre] === 'racer' ? '🏎️' : THEME_SPRITES[g.theme][0], foe: THEME_SPRITES[g.theme][1],
     ...e.play, pop: 0.3 + g.score * 0.2,
   };
 }
