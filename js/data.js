@@ -91,11 +91,16 @@ const GOALS = [
   { id: 'boot', text: 'Monte e ligue seu primeiro PC', reward: 200, check: s => s.pcOn || s.stats.lives > 0 },
   { id: 'live1', text: 'Faça sua primeira live', reward: 100, check: s => s.stats.lives >= 1 },
   { id: 'f100', text: 'Chegue a 100 seguidores', reward: 500, check: s => s.followers >= 100 },
+  { id: 'phase2', text: 'Desbloqueie a Fase 2 com 300 seguidores', reward: 300, check: s => s.phase2 },
+  { id: 'dev1', text: 'Lance seu primeiro jogo', reward: 500, check: s => s.myGames.length >= 1 },
   { id: 'v100', text: 'Tenha 100 espectadores ao mesmo tempo', reward: 800, check: s => s.stats.bestViewers >= 100 },
   { id: 'm5k', text: 'Junte R$ 5.000', reward: 500, check: s => s.money >= 5000 },
   { id: 'f1000', text: 'Chegue a 1.000 seguidores', reward: 2000, check: s => s.followers >= 1000 },
+  { id: 'score8', text: 'Lance um jogo com nota 8 ou mais', reward: 2500, check: s => s.myGames.some(g => g.score >= 8) },
+  { id: 'unreal', text: 'Aprenda a usar a Unreal Engine 5', reward: 1500, check: s => s.engines.includes('unreal') },
+  { id: 'sold10k', text: 'Venda 10.000 cópias somando todos os seus jogos', reward: 5000, check: s => s.myGames.reduce((t, g) => t + g.sold, 0) >= 10000 },
   { id: 'cyber60', text: 'Faça live de Cyberfuturo 2099 a 60 FPS ou mais', reward: 3000, check: s => s.stats.cyber60 },
-  { id: 'f10k', text: 'Chegue a 10.000 seguidores e desbloqueie a Fase 2 (em breve: virar desenvolvedor!)', reward: 10000, check: s => s.followers >= 10000 },
+  { id: 'f10k', text: 'Chegue a 10.000 seguidores', reward: 10000, check: s => s.followers >= 10000 },
 ];
 
 const NAMES = [

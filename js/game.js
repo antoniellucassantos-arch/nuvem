@@ -8,13 +8,13 @@ const ENERGY_PER_HOUR = 20;
 const KWH_PRICE = 1;          // R$ por kWh na conta de luz
 
 const PART_BY_ID = Object.fromEntries(PARTS.map(p => [p.id, p]));
-const GAME_BY_ID = Object.fromEntries(GAMES.map(g => [g.id, g]));
 
 const $ = sel => document.querySelector(sel);
 const money = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const num = v => Math.floor(v).toLocaleString('pt-BR');
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const esc = str => String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 let S = loadGame();
 let live = null;          // estado da live em andamento (não é salvo)
@@ -41,6 +41,14 @@ function newState() {
     pcOn: false,
     lastLive: null,
     stats: { lives: 0, earned: 0, bestViewers: 0, cyber60: false },
+    // Fase 2
+    phase2: false,
+    skills: { code: 0, art: 0, sound: 0 },   // XP de cada área
+    engines: ['scratch'],
+    project: null,
+    myGames: [],
+    nextGameId: 1,
+    lastReview: null,
   };
 }
 
@@ -50,7 +58,12 @@ function loadGame() {
     if (!raw) return newState();
     const data = JSON.parse(raw);
     const base = newState();
-    return { ...base, ...data, build: { ...base.build, ...data.build }, stats: { ...base.stats, ...data.stats } };
+    return {
+      ...base, ...data,
+      build: { ...base.build, ...data.build },
+      stats: { ...base.stats, ...data.stats },
+      skills: { ...base.skills, ...data.skills },
+    };
   } catch {
     return newState();
   }
@@ -58,6 +71,11 @@ function loadGame() {
 
 function saveGame() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch { /* sem armazenamento */ }
+}
+
+// Live e sessão de programação ocupam o jogador; nada de comprar peças no meio.
+function busy() {
+  return !!(live || dev);
 }
 
 function changed() {
@@ -108,7 +126,7 @@ function checkBuild() {
 
 function buyPart(id) {
   const p = PART_BY_ID[id];
-  if (!p || live || S.money < p.price || S.followers < p.unlock) return;
+  if (!p || busy() || S.money < p.price || S.followers < p.unlock) return;
   if (p.cat === 'gear') {
     if (S.gear.includes(id)) return;
     S.gear.push(id);
@@ -122,14 +140,14 @@ function buyPart(id) {
 
 function installPart(uid) {
   const p = itemPart(uid);
-  if (!p || live) return;
+  if (!p || busy()) return;
   S.build[p.cat] = uid;
   S.pcOn = false;
   changed();
 }
 
 function removePart(slot) {
-  if (live || !S.build[slot]) return;
+  if (busy() || !S.build[slot]) return;
   S.build[slot] = null;
   S.pcOn = false;
   changed();
@@ -137,7 +155,7 @@ function removePart(slot) {
 
 function sellPart(uid) {
   const p = itemPart(uid);
-  if (!p || live) return;
+  if (!p || busy()) return;
   const slot = installedSlotOf(uid);
   if (slot) { S.build[slot] = null; S.pcOn = false; }
   S.inventory = S.inventory.filter(i => i.uid !== uid);
@@ -148,7 +166,7 @@ function sellPart(uid) {
 }
 
 function powerOn() {
-  if (booting || live) return;
+  if (booting || busy()) return;
   booting = true;
   const b = checkBuild();
   const lines = ['> Apertando o botão de ligar...'];
@@ -212,9 +230,21 @@ function gearMult() {
 
 /* ---------- Live ---------- */
 
+function allGames() {
+  return GAMES.concat(S.myGames.map(ownGameForLive));
+}
+
+function gameById(id) {
+  return allGames().find(g => g.id === id);
+}
+
+function ownsGame(id) {
+  return S.games.includes(id) || id.startsWith('my-');
+}
+
 function buyGame(id) {
-  const g = GAME_BY_ID[id];
-  if (!g || live || S.games.includes(id) || S.money < g.price) return;
+  const g = gameById(id);
+  if (!g || busy() || ownsGame(id) || S.money < g.price) return;
   S.money -= g.price;
   S.games.push(id);
   selectedGame = id;
@@ -223,14 +253,14 @@ function buyGame(id) {
 }
 
 function startLive() {
-  if (live) return;
+  if (busy()) return;
   const b = checkBuild();
   if (!S.pcOn || !b.ok) return toast('Ligue o PC na aba Montagem antes de fazer live!', 'bad');
-  if (!S.games.includes(selectedGame)) return toast('Você não tem esse jogo.', 'bad');
+  if (!ownsGame(selectedGame) || !gameById(selectedGame)) return toast('Escolha um jogo que você tem.', 'bad');
   const cost = selectedHours * ENERGY_PER_HOUR;
   if (S.energy < cost) return toast('Você está cansado demais para essa live. Vá dormir! 😴', 'bad');
 
-  const game = GAME_BY_ID[selectedGame];
+  const game = gameById(selectedGame);
   const fps = estimateFps(game, b);
   S.energy -= cost;
   live = {
@@ -310,6 +340,7 @@ function endLive(reason) {
   S.stats.bestViewers = Math.max(S.stats.bestViewers, L.peak);
   S.gamePlays[L.game.id] = (S.gamePlays[L.game.id] || 0) + 1;
   if (L.game.id === 'cyber' && L.fps >= 60) S.stats.cyber60 = true;
+  if (L.game.own) streamedOwnGame(L.game.gameId, L.peak);
 
   if (reason === 'psu') {
     S.inventory = S.inventory.filter(i => i.uid !== L.psuUid);
@@ -354,17 +385,22 @@ function updateLiveView() {
 }
 
 function sleep() {
-  if (live) return;
+  if (busy()) return;
   S.day++;
   S.energy = 100;
   for (const id in S.gamePlays) S.gamePlays[id] = Math.floor(S.gamePlays[id] / 2);
   toast(`😴 Você dormiu. Bom dia, dia ${S.day}!`);
+  dailySales();
   changed();
 }
 
 /* ---------- Objetivos ---------- */
 
 function checkGoals() {
+  if (!S.phase2 && S.followers >= PHASE2_FOLLOWERS) {
+    S.phase2 = true;
+    toast('💻 Fase 2 desbloqueada! Abra a aba Dev e aprenda a programar.', 'goal');
+  }
   for (const g of GOALS) {
     if (!S.goals.includes(g.id) && g.check(S)) {
       S.goals.push(g.id);
@@ -381,6 +417,7 @@ function toast(text, cls = '') {
   el.className = 'toast ' + cls;
   el.textContent = text;
   $('#toasts').append(el);
+  while ($('#toasts').children.length > 4) $('#toasts').firstChild.remove();
   setTimeout(() => el.remove(), 3500);
 }
 
@@ -534,6 +571,7 @@ function render() {
   renderShop();
   renderLive();
   renderGoals();
+  renderDev();
 }
 
 function renderHeader() {
@@ -542,12 +580,12 @@ function renderHeader() {
   $('#stat-day').textContent = S.day;
   $('#stat-energy').textContent = S.energy;
   $('#energy-fill').style.width = S.energy + '%';
-  $('#btn-sleep').disabled = !!live;
+  $('#btn-sleep').disabled = busy();
 }
 
 function renderBuild() {
   const b = checkBuild();
-  const lock = live || booting ? 'disabled' : '';
+  const lock = busy() || booting ? 'disabled' : '';
 
   $('#welcome').hidden = S.stats.lives > 0 || S.pcOn;
   renderCase(b);
@@ -575,7 +613,7 @@ function renderBuild() {
   $('#pc-status').innerHTML = S.pcOn
     ? '<span class="dot on"></span> Ligado'
     : '<span class="dot"></span> Desligado';
-  $('#btn-power').disabled = !!(live || booting);
+  $('#btn-power').disabled = busy() || booting;
 
   const loose = S.inventory.filter(i => !installedSlotOf(i.uid));
   $('#inventory').innerHTML = loose.length
@@ -612,7 +650,7 @@ function renderShop() {
     let btn;
     if (locked) btn = `<button class="btn small" disabled>🔒 ${num(p.unlock)} seguidores</button>`;
     else if (owned) btn = '<button class="btn small" disabled>✔ Comprado</button>';
-    else btn = `<button class="btn small" data-action="buy" data-id="${p.id}" ${live || S.money < p.price ? 'disabled' : ''}>Comprar</button>`;
+    else btn = `<button class="btn small" data-action="buy" data-id="${p.id}" ${busy() || S.money < p.price ? 'disabled' : ''}>Comprar</button>`;
     return `<div class="card shop-item ${locked ? 'locked' : ''}">
       <div class="shop-icon">${CAT_ICONS[p.cat]}</div>
       <div class="slot-name">${p.name}</div>
@@ -633,15 +671,15 @@ function renderLive() {
   const ready = S.pcOn && b.ok;
   $('#live-warning').hidden = ready;
 
-  $('#games').innerHTML = GAMES.map(g => {
-    const owned = S.games.includes(g.id);
+  $('#games').innerHTML = allGames().map(g => {
+    const owned = ownsGame(g.id);
     const fps = estimateFps(g, b);
     const q = quality(fps);
     const nov = Math.round(novelty(g.id) * 100);
     return `<div class="card game ${owned && g.id === selectedGame ? 'selected' : ''} ${owned ? '' : 'not-owned'}"
       ${owned ? `data-action="pick-game" data-id="${g.id}"` : ''}>
       <div class="game-emoji">${g.emoji}</div>
-      <div class="slot-name">${g.name}</div>
+      <div class="slot-name">${esc(g.name)}${g.own ? ' <span class="chip mini">Seu jogo</span>' : ''}</div>
       <div class="muted">Pede: CPU ${g.cpu} · Vídeo ${g.gpu} · ${g.ram}GB</div>
       ${ready ? `<div class="badge ${q.cls}">${fps} FPS · ${q.label}</div>` : ''}
       <div class="muted">Popularidade ${'★'.repeat(Math.round(g.pop))} · Interesse ${nov}%</div>
@@ -653,7 +691,7 @@ function renderLive() {
     btn.classList.toggle('active', Number(btn.dataset.h) === selectedHours);
     btn.disabled = S.energy < Number(btn.dataset.h) * ENERGY_PER_HOUR;
   });
-  $('#btn-live').disabled = !ready || S.energy < selectedHours * ENERGY_PER_HOUR;
+  $('#btn-live').disabled = !ready || !!dev || S.energy < selectedHours * ENERGY_PER_HOUR;
 
   const last = S.lastLive;
   $('#last-live').hidden = !last;
@@ -661,7 +699,7 @@ function renderLive() {
     const why = last.reason === 'psu' ? ' (a fonte explodiu 💥)' : last.reason === 'stopped' ? ' (encerrada antes)' : '';
     $('#last-live').innerHTML = `<h3>Resumo da última live${why}</h3>
       <div class="summary">
-        <div><span class="muted">Jogo</span><b>${last.game}</b></div>
+        <div><span class="muted">Jogo</span><b>${esc(last.game)}</b></div>
         <div><span class="muted">Duração</span><b>${Math.floor(last.minutes / 60)}h${String(last.minutes % 60).padStart(2, '0')}</b></div>
         <div><span class="muted">Pico</span><b>${num(last.peak)} 👁</b></div>
         <div><span class="muted">Ganhou</span><b class="txt-good">${money(last.earned)}</b></div>
@@ -710,11 +748,14 @@ document.addEventListener('click', e => {
     case 'sleep': return sleep();
     case 'goto': return showTab(d.tab);
     case 'reset':
-      if (!live && confirm('Apagar todo o progresso e começar do zero?')) {
+      if (!busy() && confirm('Apagar todo o progresso e começar do zero?')) {
         S = newState();
+        resetDevDraft();
         $('#post').hidden = true;
         changed();
       }
+      return;
+    default: return handleDevAction(d);
   }
 });
 
