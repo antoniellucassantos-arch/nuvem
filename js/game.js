@@ -22,7 +22,7 @@ let booting = false;
 let shopFilter = 'cpu';
 let selectedGame = 'fogo';
 let selectedHours = 1;
-let streamAppOpen = false;   // janela do StreamZinho aberta no monitor
+let openApp = null;   // app aberto no monitor: 'stream' (StreamZinho) ou 'news' (GameNews)
 
 /* ---------- Salvamento ---------- */
 
@@ -43,6 +43,7 @@ function newState() {
     goals: [],
     pcOn: false,
     lastLive: null,
+    newsSeen: 0,
     stats: { lives: 0, earned: 0, bestViewers: 0, cyber60: false },
     // Fase 2
     phase2: false,
@@ -137,7 +138,7 @@ function checkBuild() {
 
 function buyPart(id) {
   const p = PART_BY_ID[id];
-  if (!p || busy() || S.money < p.price || S.followers < p.unlock) return;
+  if (!p || busy() || !isReleased(p) || S.money < priceOf(p) || S.followers < p.unlock) return;
   if (p.cat === 'gear') {
     if (S.gear.includes(id)) return;
     S.gear.push(id);
@@ -151,7 +152,7 @@ function buyPart(id) {
   } else {
     S.inventory.push({ uid: S.nextUid++, id });
   }
-  S.money -= p.price;
+  S.money -= priceOf(p);
   toast(['gear', 'case', 'server'].includes(p.cat) ? `🛒 ${p.name} comprado!` : `🛒 ${p.name} comprado! Instale na aba Montagem.`);
   changed();
 }
@@ -183,7 +184,7 @@ function sellPart(uid) {
   const slot = installedSlotOf(uid);
   if (slot) { S.build[slot] = null; S.pcOn = false; }
   S.inventory = S.inventory.filter(i => i.uid !== uid);
-  const value = Math.round(p.price * 0.5);
+  const value = Math.round(priceOf(p) * 0.5);
   S.money += value;
   toast(`💸 Vendeu ${p.name} por ${money(value)}`);
   changed();
@@ -261,7 +262,7 @@ function gearMult() {
 /* ---------- Live ---------- */
 
 function allGames() {
-  return GAMES.concat(S.myGames.map(ownGameForLive));
+  return GAMES.filter(isReleased).sort((a, b) => (b.day || 0) - (a.day || 0)).concat(S.myGames.map(ownGameForLive));
 }
 
 function gameById(id) {
@@ -302,10 +303,10 @@ function startLive() {
     watts: b.watts,
     psu: b.parts.psu,
     psuUid: S.build.psu,
-    mult: game.pop * gearMult() * novelty(game.id) * [0, 0.9, 1, 1.1][b.storage],
+    mult: game.pop * freshness(game) * gearMult() * novelty(game.id) * [0, 0.9, 1, 1.1][b.storage],
     playBonus: 0, raid: 0, lag: 0,
   };
-  streamAppOpen = true;
+  openApp = 'stream';
 
   $('#chat').innerHTML = '';
   $('#live-game').textContent = `${game.emoji} ${game.name}`;
@@ -436,6 +437,7 @@ function updateLiveView() {
 
 function sleep() {
   if (busy()) return;
+  const yesterday = S.day;
   S.day++;
   S.energy = 100;
   for (const id in S.gamePlays) S.gamePlays[id] = Math.floor(S.gamePlays[id] / 2);
@@ -443,6 +445,7 @@ function sleep() {
   dailySales();
   labDaily();
   dailyEvent();
+  announceReleases(yesterday, S.day);
   changed();
 }
 
@@ -553,7 +556,7 @@ function renderBuild() {
         </div>
         <div class="item-actions">
           <button class="btn small" data-action="install" data-uid="${i.uid}" ${lock}>Instalar</button>
-          <button class="btn small ghost" data-action="sell" data-uid="${i.uid}" ${lock}>Vender ${money(Math.round(p.price * 0.5))}</button>
+          <button class="btn small ghost" data-action="sell" data-uid="${i.uid}" ${lock}>Vender ${money(Math.round(priceOf(p) * 0.5))}</button>
         </div>
       </div>`;
     }).join('')
@@ -570,7 +573,8 @@ function renderShop() {
     `<button class="chip-btn ${cat === shopFilter ? 'active' : ''}" data-action="filter" data-cat="${cat}">${CAT_ICONS[cat]} ${CATS[cat]}</button>`,
   ).join('');
 
-  $('#shop-list').innerHTML = PARTS.filter(p => p.cat === shopFilter).map(p => {
+  $('#shop-list').innerHTML = PARTS.filter(p => p.cat === shopFilter && isReleased(p))
+    .sort((a, b) => (b.day || 0) - (a.day || 0) || 0).map(p => {
     const locked = S.followers < p.unlock;
     const owned = (p.cat === 'gear' && S.gear.includes(p.id)) || (p.cat === 'case' && S.cases.includes(p.id));
     const count = S.inventory.filter(i => i.id === p.id).length;
@@ -579,19 +583,19 @@ function renderShop() {
     else if (p.cat === 'server') {
       const why = serverBlock(p);
       btn = why ? `<button class="btn small" disabled>${why}</button>`
-        : `<button class="btn small" data-action="buy" data-id="${p.id}" ${busy() || S.money < p.price ? 'disabled' : ''}>Comprar</button>`;
+        : `<button class="btn small" data-action="buy" data-id="${p.id}" ${busy() || S.money < priceOf(p) ? 'disabled' : ''}>Comprar</button>`;
     } else if (p.cat === 'case' && owned) {
       btn = S.caseId === p.id
         ? '<button class="btn small" disabled>✔ Em uso</button>'
         : `<button class="btn small ghost" data-action="use-case" data-id="${p.id}" ${busy() ? 'disabled' : ''}>Usar este</button>`;
     } else if (owned) btn = '<button class="btn small" disabled>✔ Comprado</button>';
-    else btn = `<button class="btn small" data-action="buy" data-id="${p.id}" ${busy() || S.money < p.price ? 'disabled' : ''}>Comprar</button>`;
+    else btn = `<button class="btn small" data-action="buy" data-id="${p.id}" ${busy() || S.money < priceOf(p) ? 'disabled' : ''}>Comprar</button>`;
     return `<div class="card shop-item ${locked ? 'locked' : ''}">
       ${partThumb(p)}
-      <div class="slot-name">${p.name}</div>
+      <div class="slot-name">${p.name} ${isNew(p) ? '<span class="chip mini new">🆕 Novo</span>' : ''}</div>
       <div class="muted">${partSpec(p)}</div>
       ${count ? `<div class="muted">Você tem: ${count}</div>` : ''}
-      <div class="price">${money(p.price)}</div>
+      <div class="price">${money(priceOf(p))}${priceOf(p) < p.price ? ` <s class="muted">${money(p.price)}</s>` : ''}</div>
       ${btn}
     </div>`;
   }).join('');
@@ -606,8 +610,13 @@ function renderLive() {
   $('#screen-os').hidden = !ready || !!live;
   $('#screen-live').hidden = !live;
   $('#live-running').hidden = !live;
-  $('#win-stream').hidden = !streamAppOpen;
-  $('#os-hint').hidden = streamAppOpen;
+  $('#win-stream').hidden = openApp !== 'stream';
+  $('#win-news').hidden = openApp !== 'news';
+  $('#os-hint').hidden = !!openApp;
+  const unread = unreadNews();
+  $('#news-badge').textContent = unread;
+  $('#news-badge').hidden = !unread;
+  if (openApp === 'news') renderNews();
   $('#os-clock').textContent = `Dia ${S.day} · ⚡${S.energy}`;
   renderDesk(b);
   if (live) return;
@@ -624,6 +633,7 @@ function renderLive() {
       <div class="muted">Pede: CPU ${g.cpu} · Vídeo ${g.gpu} · ${g.ram}GB</div>
       ${ready ? `<div class="badge ${q.cls}">${fps} FPS · ${q.label}</div>` : ''}
       <div class="muted">Popularidade ${'★'.repeat(Math.round(g.pop))} · Interesse ${nov}%</div>
+      ${freshnessLabel(g) ? `<div class="muted">${freshnessLabel(g)}${g.studio ? ` · ${g.studio}` : ''}</div>` : ''}
       ${owned ? '' : `<button class="btn small" data-action="buy-game" data-id="${g.id}" ${S.money < g.price ? 'disabled' : ''}>Comprar ${money(g.price)}</button>`}
     </div>`;
   }).join('');
@@ -648,6 +658,36 @@ function renderLive() {
         <div><span class="muted">Conta de luz</span><b class="txt-bad">-${money(last.bill)}</b></div>
       </div>`;
   }
+}
+
+// App GameNews: lançamentos do mercado, rumores e os seus jogos.
+function renderNews() {
+  const items = RELEASES.filter(r => r.day <= S.day).map(r => ({ day: r.day, r }))
+    .concat(S.myGames.map(g => ({ day: g.day, mine: g })))
+    .sort((a, b) => b.day - a.day).slice(0, 20);
+  const rumors = upcomingReleases(2).map(r => {
+    const who = r.part ? { nvidia: 'a NVIDIA', amd: 'a AMD', intel: 'a Intel' }[r.part.brand] || 'uma marca famosa' : 'um estúdio gigante';
+    const what = r.part ? `um(a) novo(a) ${CATS[r.part.cat].toLowerCase()}` : 'um jogo que promete ser o mais pesado já feito';
+    return `<div class="news rumor">🔮 <b>Rumor:</b> ${who} prepara ${what}. Chega em ${r.day - S.day} dia${r.day - S.day > 1 ? 's' : ''}.</div>`;
+  }).join('');
+  $('#news-list').innerHTML = rumors + (items.length ? items.map(({ day, r, mine }) => {
+    const age = S.day - day;
+    const when = age === 0 ? 'hoje' : age === 1 ? 'ontem' : `há ${age} dias`;
+    if (mine) {
+      return `<div class="news mine"><span class="news-icon">🕹️</span><div><b>Você lançou ${esc(mine.name)}</b>
+        <div class="muted">Nota ${mine.score.toFixed(1)} · ${num(mine.sold)} cópias · ${when}</div></div></div>`;
+    }
+    if (r.part) {
+      const p = PART_BY_ID[r.part.id];
+      return `<div class="news"><span class="news-icon">${CAT_ICONS[p.cat]}</span><div><b>Chegou: ${p.name}</b>
+        <div class="muted">${partSpec(p)} · ${money(priceOf(p))} · ${when}</div></div>
+        <button class="btn small ghost" data-action="shop-cat" data-cat="${p.cat}">Ver na loja</button></div>`;
+    }
+    const g = r.game;
+    return `<div class="news"><span class="news-icon">${g.emoji}</span><div><b>Novo jogo: ${g.name}</b>
+      <div class="muted">${g.studio} · pede CPU ${g.cpu}, vídeo ${g.gpu} e ${g.ram}GB · ${g.price ? money(g.price) : 'grátis'} · ${when}</div></div>
+      <button class="btn small ghost" data-action="open-app" data-app="stream">Jogar</button></div>`;
+  }).join('') : '<p class="muted">Nenhuma notícia ainda. Volte amanhã!</p>');
 }
 
 // Mesa do streamer: parede, monitor, webcam, ring light, microfone, stream deck e o PC.
@@ -703,8 +743,11 @@ document.addEventListener('click', e => {
     case 'remove': return removePart(d.slot);
     case 'filter': shopFilter = d.cat; return renderShop();
     case 'use-case': return useCase(d.id);
-    case 'open-app': streamAppOpen = true; return renderLive();
-    case 'close-app': streamAppOpen = false; return renderLive();
+    case 'open-app':
+      openApp = d.app || 'stream';
+      if (openApp === 'news') { S.newsSeen = S.day; saveGame(); }
+      return renderLive();
+    case 'close-app': openApp = null; return renderLive();
     case 'toggle-play': return toggleManual();
     case 'shop-cat': shopFilter = d.cat; renderShop(); return showTab('shop');
     case 'power': return powerOn();

@@ -544,3 +544,23 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 @media (prefers-reduced-motion: reduce) {
   .rack-led, .os-hint, .event-banner { animation: none; }
 }
+
+/* Lançamentos e GameNews */
+.chip.mini.new { background: rgba(62, 207, 142, .18); border-color: rgba(62, 207, 142, .5); color: var(--good); }
+.price s { font-size: .8rem; font-weight: 400; }
+.os-icon { position: relative; }
+.icon-badge {
+  position: absolute; top: 2px; right: 14px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--bad); color: #fff; font-size: .7rem; line-height: 18px; text-align: center;
+}
+.news { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; background: var(--panel-2); margin-bottom: 8px; }
+.news > div { flex: 1; min-width: 0; }
+.news.rumor { display: block; border: 1px dashed var(--accent-2); background: rgba(124, 92, 255, .08); }
+.news.mine { border-left: 3px solid var(--good); }
+.news-icon { font-size: 1.6rem; flex-shrink: 0; }
+@media (max-width: 720px) {
+  .news { flex-wrap: wrap; }
+}
+.task-apps { display: flex; align-items: center; gap: 6px; }
+.task-btn { background: rgba(255, 255, 255, .08); border: 0; border-radius: 6px; padding: 2px 8px; font-size: 1rem; cursor: pointer; }
+.task-btn:hover { background: rgba(255, 255, 255, .2); }

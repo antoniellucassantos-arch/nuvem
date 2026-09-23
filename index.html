@@ -95,7 +95,8 @@
 
             <div class="os" id="screen-os" hidden>
               <div class="os-icons">
-                <button class="os-icon" data-action="open-app"><span>🔴</span>StreamZinho</button>
+                <button class="os-icon" data-action="open-app" data-app="stream"><span>🔴</span>StreamZinho</button>
+                <button class="os-icon" data-action="open-app" data-app="news"><span>📰</span>GameNews<b class="icon-badge" id="news-badge" hidden></b></button>
                 <button class="os-icon" data-action="goto" data-tab="dev"><span>💻</span>Dev</button>
                 <button class="os-icon" data-action="goto" data-tab="shop"><span>🛒</span>Loja</button>
                 <button class="os-icon" data-action="goto" data-tab="goals"><span>🏆</span>Objetivos</button>
@@ -121,7 +122,21 @@
                 </div>
               </div>
 
-              <div class="taskbar"><span>🪟 InfoOS</span><span id="os-clock"></span></div>
+              <div class="window" id="win-news" hidden>
+                <div class="win-bar">
+                  <span>📰 GameNews: lançamentos do mundo gamer</span>
+                  <button class="win-close" data-action="close-app" aria-label="Fechar">✕</button>
+                </div>
+                <div class="win-body" id="news-list"></div>
+              </div>
+
+              <div class="taskbar">
+                <span class="task-apps">🪟 InfoOS
+                  <button class="task-btn" data-action="open-app" data-app="stream" title="StreamZinho">🔴</button>
+                  <button class="task-btn" data-action="open-app" data-app="news" title="GameNews">📰</button>
+                </span>
+                <span id="os-clock"></span>
+              </div>
             </div>
 
             <div class="stream-screen" id="screen-live" hidden>
@@ -274,6 +289,7 @@
   <div id="toasts"></div>
 
   <script src="js/data.js"></script>
+  <script src="js/releases.js"></script>
   <script src="js/dev-data.js"></script>
   <script src="js/dev.js"></script>
   <script src="js/lab-data.js"></script>

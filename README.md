@@ -14,6 +14,8 @@ Abra o `index.html` no navegador. Não precisa instalar nada.
 3. **Live:** na mesa do streamer, clique no **StreamZinho** no monitor, escolha o jogo e a duração. O jogo aparece rodando na tela, no FPS que o seu PC aguenta. Clique em **Jogar eu mesmo** (ou use Espaço, setas e clique) para jogar de verdade: mandar bem aumenta o público. Webcam, ring light, microfone, stream deck, monitores maiores e as placas de seguidores aparecem no cenário.
    - **Eventos:** raids, clipes viralizando, o gato no teclado, patrocínios, haters, queda de luz (o nobreak salva), internet oscilando (o roteador salva), PC esquentando e a **fonte genérica, que pode explodir a qualquer momento** (e às vezes levar outra peça junto).
 4. **Dormir:** recupera a energia e passa o dia. Jogar sempre o mesmo jogo cansa o público.
+   - **O mercado anda sozinho:** com o passar dos dias, NVIDIA, AMD, Intel e outras marcas lançam peças novas (inclusive soquete novo, que exige trocar a placa-mãe), e outros estúdios lançam jogos novos e mais pesados, que chegam com hype. Jogos antigos perdem público e peças antigas ficam mais baratas. Os lançamentos continuam para sempre, cada vez mais potentes.
+   - O app **📰 GameNews**, no monitor, mostra os lançamentos, os rumores do que vem por aí e os seus jogos.
 5. **Objetivos:** complete metas para ganhar prêmios em dinheiro.
 
 ### Fase 2: virar desenvolvedor (aba Dev)
@@ -47,6 +49,7 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 - `js/draw.js`: desenhos em SVG (gabinete, peças, rack do servidor, miniaturas da loja e capas dos jogos)
 - `js/sim.js`: simulação jogável que aparece no monitor durante a live
 - `js/events.js`: eventos aleatórios (fonte explodindo, raids, queda de luz...)
+- `js/releases.js`: lançamentos do mercado (peças e jogos novos com o passar dos dias)
 - `js/dev-data.js`: dados da Fase 2 (ferramentas, gêneros, temas, cursos)
 - `js/dev.js`: lógica da Fase 2 (estudar, programar, lançar e vender)
 - `js/lab-data.js` e `js/lab.js`: Fases 3 e 4 (IA, linguagem e sua própria IA)

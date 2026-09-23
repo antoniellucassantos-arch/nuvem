@@ -129,7 +129,7 @@ function liveBanner(text) {
 
 const DAILY_EVENTS = [
   () => {
-    const options = PARTS.filter(p => ['cpu', 'gpu', 'ram', 'storage'].includes(p.cat) && p.unlock <= S.followers && p.price <= 1500);
+    const options = PARTS.filter(p => ['cpu', 'gpu', 'ram', 'storage'].includes(p.cat) && isReleased(p) && p.unlock <= S.followers && p.price <= 1500);
     const p = pick(options);
     S.inventory.push({ uid: S.nextUid++, id: p.id });
     return `🎁 Uma marca te mandou de presente: ${p.name}! (está nas peças guardadas)`;
