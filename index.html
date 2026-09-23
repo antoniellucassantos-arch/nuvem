@@ -27,6 +27,8 @@
     <button class="tab" data-tab="shop">🛒 Loja</button>
     <button class="tab" data-tab="live">🔴 Live</button>
     <button class="tab" data-tab="dev">💻 Dev</button>
+    <button class="tab" data-tab="ai">🤖 IA</button>
+    <button class="tab" data-tab="lab">🧬 Lab</button>
     <button class="tab" data-tab="goals">🏆 Objetivos</button>
   </nav>
 
@@ -165,10 +167,49 @@
           <div id="my-games"></div>
         </div>
 
-        <div class="card locked-card small">
-          <h2>🤖 IA criadora de jogos</h2>
-          <p class="muted">Fase 3: em breve. Uma IA que cria jogos para você.</p>
+        <div class="card locked-card small" id="phase3-teaser"></div>
+      </div>
+    </section>
+
+    <section id="tab-ai" hidden>
+      <div class="card locked-card" id="ai-locked">
+        <div class="lock-icon">🔒</div>
+        <h2>Fase 3: IA criadora de jogos</h2>
+        <p>Lance <b>3 jogos</b> e chegue a <b>Programação nível 5</b> para criar uma IA que faz jogos por você.</p>
+        <p class="muted" id="ai-locked-progress"></p>
+      </div>
+      <div id="ai-content" hidden>
+        <div class="card" id="ai-main"></div>
+        <div class="card" id="ai-session" hidden>
+          <div class="muted" id="ai-status"></div>
+          <pre class="terminal big" id="ai-term"></pre>
+          <svg class="loss-chart" id="ai-chart" viewBox="0 0 300 100" preserveAspectRatio="none"></svg>
+          <div class="progress"><div id="ai-bar"></div></div>
+          <button class="btn ghost" data-action="stop-lab">Parar (a energia que sobrar volta)</button>
         </div>
+        <div class="card" id="ai-gen"></div>
+        <div class="card" id="ai-auto"></div>
+      </div>
+    </section>
+
+    <section id="tab-lab" hidden>
+      <div class="card locked-card" id="lab-locked">
+        <div class="lock-icon">🔒</div>
+        <h2>Fase 4: sua linguagem e sua própria IA</h2>
+        <p>Treine sua IA de jogos até o <b>nível 5</b> para criar sua própria linguagem de programação e sua própria IA.</p>
+        <p class="muted" id="lab-locked-progress"></p>
+      </div>
+      <div id="lab-content" hidden>
+        <div class="card end-card" id="lab-end" hidden></div>
+        <div class="card" id="lang-card"></div>
+        <div class="card" id="lab-session" hidden>
+          <div class="muted" id="lab-status"></div>
+          <pre class="terminal big" id="lab-term"></pre>
+          <svg class="loss-chart" id="lab-chart" viewBox="0 0 300 100" preserveAspectRatio="none"></svg>
+          <div class="progress"><div id="lab-bar"></div></div>
+          <button class="btn ghost" data-action="stop-lab">Parar (a energia que sobrar volta)</button>
+        </div>
+        <div class="card" id="brain-card"></div>
       </div>
     </section>
 
@@ -184,8 +225,8 @@
           <h3>Em breve</h3>
           <ul class="roadmap">
             <li>✅ Fase 2: aprender a programar e criar seus próprios jogos (aba Dev)</li>
-            <li>🤖 Fase 3: IA criadora de jogos</li>
-            <li>🧬 Fase 4: sua própria linguagem de programação e sua própria IA</li>
+            <li>✅ Fase 3: IA criadora de jogos (aba IA)</li>
+            <li>✅ Fase 4: sua própria linguagem de programação e sua própria IA (aba Lab)</li>
           </ul>
           <button class="btn ghost small" data-action="reset">Apagar progresso</button>
         </div>
@@ -198,6 +239,8 @@
   <script src="js/data.js"></script>
   <script src="js/dev-data.js"></script>
   <script src="js/dev.js"></script>
+  <script src="js/lab-data.js"></script>
+  <script src="js/lab.js"></script>
   <script src="js/draw.js"></script>
   <script src="js/game.js"></script>
 </body>

@@ -107,6 +107,13 @@ const GOALS = [
   { id: 'score8', text: 'Lance um jogo com nota 8 ou mais', reward: 2500, check: s => s.myGames.some(g => g.score >= 8) },
   { id: 'unreal', text: 'Aprenda a usar a Unreal Engine 5', reward: 1500, check: s => s.engines.includes('unreal') },
   { id: 'sold10k', text: 'Venda 10.000 cópias somando todos os seus jogos', reward: 5000, check: s => s.myGames.reduce((t, g) => t + g.sold, 0) >= 10000 },
+  { id: 'phase3', text: 'Desbloqueie a Fase 3 (3 jogos lançados e Programação 5)', reward: 5000, check: s => s.phase3 },
+  { id: 'ai-born', text: 'Crie sua IA criadora de jogos', reward: 5000, check: s => !!s.ai },
+  { id: 'ai-game', text: 'Lance um jogo feito pela IA', reward: 5000, check: s => s.myGames.some(g => g.ai) },
+  { id: 'phase4', text: 'Desbloqueie a Fase 4 (IA nível 5)', reward: 20000, check: s => s.phase4 },
+  { id: 'lang', text: 'Lance sua própria linguagem de programação', reward: 50000, check: s => !!(s.lang && s.lang.released) },
+  { id: 'brain', text: 'Lance sua própria IA para o público', reward: 100000, check: s => !!(s.brain && s.brain.released) },
+  { id: 'end', text: 'Zere o Inforeal: sua IA no nível 10 e 100 mil devs usando sua linguagem', reward: 1000000, check: s => s.finished },
   { id: 'cyber60', text: 'Faça live de Cyberfuturo 2099 a 60 FPS ou mais', reward: 3000, check: s => s.stats.cyber60 },
   { id: 'f10k', text: 'Chegue a 10.000 seguidores', reward: 10000, check: s => s.followers >= 10000 },
 ];

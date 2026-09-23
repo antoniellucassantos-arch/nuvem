@@ -359,3 +359,32 @@ input:not([type]):focus { outline: 2px solid var(--accent); outline-offset: 1px;
 }
 .live-cam.lit { box-shadow: 0 0 0 2px rgba(255, 255, 255, .6), 0 0 24px rgba(255, 255, 255, .45); background: #1d2029; }
 .live-cam .mic { position: absolute; left: 6px; bottom: 4px; font-size: .9rem; }
+
+/* Fases 3 e 4 */
+.toggle { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 10px; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); margin-top: 2px; flex-shrink: 0; }
+.terminal.big { height: 210px; overflow: hidden; margin-top: 8px; }
+.loss-chart { display: block; width: 100%; height: 110px; margin-top: 8px; background: #05070a; border-radius: 8px; }
+.loss-line { fill: none; stroke: var(--good); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.code-preview {
+  margin: 0 0 12px; padding: 12px; background: #07090d; color: #c9b8ff; border-radius: 8px;
+  font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; white-space: pre; overflow-x: auto;
+}
+.stages { display: grid; gap: 8px; margin-bottom: 8px; }
+.stage { background: var(--panel-2); border-radius: 8px; padding: 10px; border: 1px solid transparent; }
+.stage.current { border-color: var(--accent); }
+.stage.done { opacity: .75; }
+.stage-head { display: flex; justify-content: space-between; gap: 8px; }
+.stage .progress { margin-top: 6px; }
+.brain-chat { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; }
+.msg.me { align-self: flex-end; background: var(--accent); color: #fff; }
+.msg.bot { align-self: flex-start; background: var(--panel-2); }
+.brain-chat + .row input { flex: 1; }
+input[type="text"] {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font: inherit; width: 100%;
+}
+input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.end-card { text-align: center; border-color: var(--warn); background: linear-gradient(160deg, #2a2310, var(--panel) 60%); }
+.end-trophy { font-size: 3.5rem; }

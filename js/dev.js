@@ -8,6 +8,15 @@ const EDITOR_FILES = { Blocos: 'projeto.sb3', Python: 'main.py', JavaScript: 'ga
 const COMMENT = { Blocos: '💬', Python: '#', GDScript: '#', JavaScript: '//', 'C#': '//', 'C++': '//' };
 
 const ENGINE_BY_ID = Object.fromEntries(ENGINES.map(e => [e.id, e]));
+
+// Ferramentas conhecidas + a sua própria linguagem (Fase 4), quando lançada.
+function allEngines() {
+  return S.lang && S.lang.released ? ENGINES.concat(myLangEngine()) : ENGINES;
+}
+
+function engineById(id) {
+  return id === 'mylang' ? myLangEngine() : ENGINE_BY_ID[id];
+}
 const GENRE_BY_ID = Object.fromEntries(GENRES.map(g => [g.id, g]));
 const THEME_BY_ID = Object.fromEntries(THEMES.map(t => [t.id, t]));
 const SIZE_BY_ID = Object.fromEntries(SIZES.map(s => [s.id, s]));
@@ -64,7 +73,7 @@ function engineProblem(e) {
 }
 
 function learnEngine(id) {
-  const e = ENGINE_BY_ID[id];
+  const e = engineById(id);
   if (!e || busy() || S.engines.includes(id) || skillLevel('code') < e.code || S.money < e.price) return;
   S.money -= e.price;
   S.engines.push(id);
@@ -83,7 +92,7 @@ function normFocus(f) {
 
 function startProject() {
   if (busy() || S.project || !S.phase2) return;
-  const e = ENGINE_BY_ID[draft.engine];
+  const e = engineById(draft.engine);
   const g = GENRE_BY_ID[draft.genre];
   const size = SIZE_BY_ID[draft.size];
   const name = draft.name.trim() || pick(DEV_NAME_IDEAS);
@@ -113,7 +122,7 @@ function startDevSession(mode, hours) {
   if (busy() || !P) return;
   const b = checkBuild();
   if (!S.pcOn || !b.ok) return toast('Ligue o PC na aba Montagem para programar!', 'bad');
-  const problem = engineProblem(ENGINE_BY_ID[P.engine]);
+  const problem = engineProblem(engineById(P.engine));
   if (problem) return toast(problem, 'bad');
   if (mode === 'fix' && P.bugs < 1) return toast('Não tem bug para corrigir! 🎉');
   if (mode === 'dev' && P.progress >= P.target) return;
@@ -121,7 +130,7 @@ function startDevSession(mode, hours) {
   if (S.energy < cost) return toast('Você está cansado demais. Vá dormir! 😴', 'bad');
 
   S.energy -= cost;
-  const lang = ENGINE_BY_ID[P.engine].lang;
+  const lang = engineById(P.engine).lang;
   dev = { mode, tick: 0, total: hours * TICKS_PER_HOUR, lang, lines: [`${COMMENT[lang]} ${P.name}`], log: [] };
   $('#dev-log').innerHTML = '';
   $('#editor-file').textContent = EDITOR_FILES[lang];
@@ -210,17 +219,22 @@ function updateDevView() {
 
 function projectQuality(P) {
   const g = GENRE_BY_ID[P.genre];
-  const e = ENGINE_BY_ID[P.engine];
+  const e = engineById(P.engine);
   let diff = 0, skillF = 0;
   for (const k in SKILLS) {
     diff += Math.abs(P.focus[k] - g.w[k]);
     skillF += g.w[k] * (1 + skillLevel(k) * 0.3);
   }
-  const fit = 1 - diff / 2;
+  let fit = 1 - diff / 2;
+  // Jogos feitos pela IA usam o nível dela no lugar dos seus conhecimentos.
+  if (P.ai) {
+    skillF = 1 + P.aiLevel * 0.32;
+    fit = Math.min(1, 0.8 + P.aiLevel * 0.02);
+  }
   const combo = COMBOS[`${P.genre}+${P.theme}`] || 1;
   const penalty = Math.min(0.6, (P.bugs / P.target) * 1.2);
   const raw = skillF * e.mult * combo * (0.55 + 0.45 * fit) * (1 + P.bonus) * (1 - penalty);
-  const expectation = 1.4 * (1 + 0.18 * S.myGames.length);
+  const expectation = 1.4 * (1 + 0.18 * Math.min(S.myGames.length, 15));
   const score = Math.round(Math.min(10, Math.max(1, 10 * raw / expectation)) * 10) / 10;
   return { score, fit, combo, penalty, engine: e, genre: g };
 }
@@ -240,6 +254,8 @@ function reviewsFor(P, q) {
   if (q.fit < 0.85) notes.push(`O foco não combinou com um jogo de ${q.genre.name}. ${q.genre.hint}`);
   if (q.engine.mult < 0.8 && S.myGames.length >= 2) notes.push('Os gráficos estão simples demais. Que tal aprender uma ferramenta melhor?');
   if (P.bonus > 0) notes.push('Adoramos as ideias criativas! 💡');
+  if (P.ai) notes.push(`Feito pela IA ${P.aiName}. ${P.aiLevel < 4 ? 'Dá pra perceber... 🤖' : 'Nem parece feito por uma máquina!'}`);
+  if (P.engine === 'mylang') notes.push(`Programado em ${q.engine.name}, a linguagem da casa! 🧬`);
   return { reviews, notes };
 }
 
@@ -247,7 +263,7 @@ function salesFor(game) {
   const size = SIZE_BY_ID[game.size];
   const price = PRICE_BY_ID[game.price];
   const age = S.day - game.day;
-  const base = (30 + S.followers * 0.3) * Math.pow(game.score / 10, 2.5) * size.sales * price.units
+  const base = (30 + 3 * Math.pow(S.followers, 0.6)) * Math.pow(game.score / 10, 2.5) * size.sales * price.units
     * Math.pow(0.85, age) * (1 + game.hype);
   return Math.round(base * rand(0.85, 1.15));
 }
@@ -263,23 +279,29 @@ function applySales(game, units) {
   return revenue;
 }
 
-function launchGame() {
-  const P = S.project;
-  if (busy() || !P || P.progress < P.target) return;
+// Publica um projeto pronto. Usado pelo botão "Lançar" e pelo modo automático da IA.
+function releaseProject(P, priceId) {
   const q = projectQuality(P);
   const { reviews, notes } = reviewsFor(P, q);
   const game = {
     id: S.nextGameId++,
     name: P.name, engine: P.engine, genre: P.genre, theme: P.theme, size: P.size,
-    score: q.score, price: draft.price, day: S.day,
+    score: q.score, price: priceId, day: S.day, ai: !!P.ai,
     sold: 0, revenue: 0, lastSales: 0, hype: 0.5,
   };
   // Primeiro dia: pico de lançamento.
   const units = salesFor(game) * 2;
   const revenue = applySales(game, units);
   S.myGames.push(game);
+  return { game, review: { name: game.name, score: q.score, reviews, notes, units, revenue } };
+}
+
+function launchGame() {
+  const P = S.project;
+  if (busy() || !P || P.progress < P.target) return;
+  const { game, review } = releaseProject(P, draft.price);
   S.project = null;
-  S.lastReview = { name: game.name, score: q.score, reviews, notes, units, revenue };
+  S.lastReview = review;
   toast(`🎉 ${game.name} foi lançado!`, 'goal');
   changed();
   $('#review').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -297,7 +319,7 @@ function dailySales() {
 }
 
 function ownGameForLive(g) {
-  const e = ENGINE_BY_ID[g.engine];
+  const e = engineById(g.engine);
   return {
     id: 'my-' + g.id, gameId: g.id, own: true, name: g.name, price: 0,
     emoji: THEME_BY_ID[g.theme].emoji, emoji2: GENRE_BY_ID[g.genre].emoji, colors: GENRE_COLORS[g.genre],
@@ -340,7 +362,7 @@ function renderDev() {
   }).join('');
 
   // Ferramentas
-  $('#engines').innerHTML = ENGINES.map(e => {
+  $('#engines').innerHTML = allEngines().map(e => {
     const owned = S.engines.includes(e.id);
     const problem = owned ? engineProblem(e) : null;
     let action;
@@ -370,7 +392,7 @@ function renderProject(lock) {
 
   if (!P) {
     const hadFocus = document.activeElement && document.activeElement.id === 'draft-name';
-    const e = ENGINE_BY_ID[draft.engine];
+    const e = engineById(draft.engine);
     const g = GENRE_BY_ID[draft.genre];
     const f = normFocus(draft.focus);
     const chip = (key, val, label, disabled = false, title = '') =>
@@ -383,7 +405,7 @@ function renderProject(lock) {
         <button class="btn small ghost" data-action="draft-random-name" title="Sortear nome">🎲</button></span>
       </label>
       <h3>Ferramenta</h3>
-      <div class="chips">${S.engines.map(id => chip('engine', id, ENGINE_BY_ID[id].name)).join('')}</div>
+      <div class="chips">${S.engines.map(id => chip('engine', id, engineById(id).name)).join('')}</div>
       <h3>Gênero</h3>
       <div class="chips">${GENRES.map(x => chip('genre', x.id, `${x.emoji} ${x.name}`, x.is3d && !e.is3d, x.is3d && !e.is3d ? 'Precisa de uma ferramenta 3D' : '')).join('')}</div>
       <h3>Tema</h3>
@@ -408,7 +430,7 @@ function renderProject(lock) {
     return;
   }
 
-  const e = ENGINE_BY_ID[P.engine];
+  const e = engineById(P.engine);
   const g = GENRE_BY_ID[P.genre];
   const t = THEME_BY_ID[P.theme];
   const done = P.progress >= P.target;
@@ -458,8 +480,8 @@ function renderMyGames() {
       return `<div class="item">
         ${gameCover(ownGameForLive(g), 'mini')}
         <div class="slot-info">
-          <div class="slot-name">${esc(g.name)} ${g.hype > 0.6 ? '<span class="chip mini">🔥 hype</span>' : ''}</div>
-          <div class="muted">${GENRE_BY_ID[g.genre].name} de ${THEME_BY_ID[g.theme].name} · ${ENGINE_BY_ID[g.engine].name} · ${PRICE_BY_ID[g.price].name} · lançado no dia ${g.day}</div>
+          <div class="slot-name">${esc(g.name)} ${g.ai ? '<span class="chip mini">🤖 IA</span>' : ''} ${g.hype > 0.6 ? '<span class="chip mini">🔥 hype</span>' : ''}</div>
+          <div class="muted">${GENRE_BY_ID[g.genre].name} de ${THEME_BY_ID[g.theme].name} · ${engineById(g.engine).name} · ${PRICE_BY_ID[g.price].name} · lançado no dia ${g.day}</div>
           <div class="muted">${num(g.sold)} cópias · ${money(g.revenue)} no total · ontem: ${num(g.lastSales)}</div>
         </div>
         <div class="badge ${q}">${g.score.toFixed(1)}</div>
@@ -482,7 +504,7 @@ function handleDevAction(d) {
     case 'learn-engine': return learnEngine(d.id);
     case 'draft':
       draft[d.key] = d.val;
-      if (GENRE_BY_ID[draft.genre].is3d && !ENGINE_BY_ID[draft.engine].is3d) draft.genre = 'plataforma';
+      if (GENRE_BY_ID[draft.genre].is3d && !engineById(draft.engine).is3d) draft.genre = 'plataforma';
       if (skillLevel('code') < SIZE_BY_ID[draft.size].code) draft.size = 'pequeno';
       return renderDev();
     case 'draft-preset':

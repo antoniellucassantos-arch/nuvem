@@ -27,11 +27,15 @@ Com 300 seguidores você desbloqueia a aba **Dev**:
 
 O progresso fica salvo no navegador.
 
-## Próximas fases
+### Fase 3: IA criadora de jogos (aba IA)
 
-- ✅ **Fase 2:** aprender a programar e criar seus próprios jogos
-- 🤖 **Fase 3:** IA criadora de jogos
-- 🧬 **Fase 4:** sua própria linguagem de programação e sua própria IA
+Com 3 jogos lançados e Programação nível 5, monte um laboratório e treine sua IA. O treino usa a placa de vídeo e a RAM (ou GPUs alugadas na nuvem). A IA cria jogos sob encomenda e, no nível 5, lança um jogo por noite sozinha.
+
+### Fase 4: sua linguagem e sua própria IA (aba Lab)
+
+Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo das palavras e tipos), desenvolva as 5 etapas do compilador e lance para o mundo: ela vira a melhor ferramenta da aba Dev e ganha devs todo dia. Depois, compre um supercomputador, treine sua própria IA de conversa, lance para o público e converse com ela.
+
+**Para zerar:** sua IA no nível 10 e 100 mil devs usando sua linguagem.
 
 ## Estrutura
 
@@ -42,3 +46,4 @@ O progresso fica salvo no navegador.
 - `js/draw.js`: desenhos em SVG (gabinete, peças, miniaturas da loja e capas dos jogos)
 - `js/dev-data.js`: dados da Fase 2 (ferramentas, gêneros, temas, cursos)
 - `js/dev.js`: lógica da Fase 2 (estudar, programar, lançar e vender)
+- `js/lab-data.js` e `js/lab.js`: Fases 3 e 4 (IA, linguagem e sua própria IA)

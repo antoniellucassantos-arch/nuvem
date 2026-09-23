@@ -51,6 +51,13 @@ function newState() {
     myGames: [],
     nextGameId: 1,
     lastReview: null,
+    // Fases 3 e 4
+    phase3: false,
+    phase4: false,
+    ai: null,       // IA criadora de jogos
+    lang: null,     // sua linguagem de programação
+    brain: null,    // sua própria IA
+    finished: false,
   };
 }
 
@@ -77,7 +84,7 @@ function saveGame() {
 
 // Live e sessão de programação ocupam o jogador; nada de comprar peças no meio.
 function busy() {
-  return !!(live || dev);
+  return !!(live || dev || lab);
 }
 
 function changed() {
@@ -319,15 +326,18 @@ function liveTick() {
   L.tick++;
 
   const ramp = Math.min(1, L.tick / 4);
-  const base = 5 + S.followers * 0.1 + Math.sqrt(S.followers) * 3;
+  // Público cresce mais devagar que os seguidores (expoente 0.6), para não virar bola de neve.
+  const base = 5 + 3 * Math.pow(S.followers, 0.6);
   L.viewers = Math.max(0, Math.round(base * L.mult * L.q.mult * ramp * rand(0.8, 1.2)));
   L.peak = Math.max(L.peak, L.viewers);
 
-  const income = L.viewers * 0.8;
+  // Quanto maior o público, menos cada espectador rende (anúncios e inscrições diluem).
+  const income = L.viewers * 0.8 / Math.sqrt(1 + L.viewers / 500);
   L.earned += income;
   S.money += income;
 
-  const newFollowers = L.viewers * 0.15 * L.q.mult * rand(0.5, 1.5);
+  // Fica cada vez mais difícil ganhar seguidores quando você já é famoso.
+  const newFollowers = L.viewers * 0.15 * L.q.mult * rand(0.5, 1.5) / (1 + S.followers / 2e6);
   L.followers += newFollowers;
   S.followers += newFollowers;
 
@@ -420,12 +430,14 @@ function sleep() {
   for (const id in S.gamePlays) S.gamePlays[id] = Math.floor(S.gamePlays[id] / 2);
   toast(`😴 Você dormiu. Bom dia, dia ${S.day}!`);
   dailySales();
+  labDaily();
   changed();
 }
 
 /* ---------- Objetivos ---------- */
 
 function checkGoals() {
+  checkLabUnlocks();
   if (!S.phase2 && S.followers >= PHASE2_FOLLOWERS) {
     S.phase2 = true;
     toast('💻 Fase 2 desbloqueada! Abra a aba Dev e aprenda a programar.', 'goal');
@@ -472,6 +484,7 @@ function render() {
   renderLive();
   renderGoals();
   renderDev();
+  renderLab();
 }
 
 function renderHeader() {
@@ -660,8 +673,11 @@ document.addEventListener('click', e => {
         changed();
       }
       return;
-    default: return handleDevAction(d);
+    default:
+      handleDevAction(d);
+      handleLabAction(d);
   }
 });
 
+checkGoals();
 render();
