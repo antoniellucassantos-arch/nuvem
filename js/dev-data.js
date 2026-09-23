@@ -45,6 +45,12 @@ const GENRES = [
   { id: 'terror', name: 'Terror', emoji: '👻', w: { code: 0.3, art: 0.35, sound: 0.35 }, hint: 'Sem um som assustador não dá medo!', is3d: true },
 ];
 
+// Cores das capas dos seus jogos, por gênero.
+const GENRE_COLORS = {
+  plataforma: ['#1e3a8a', '#60a5fa'], puzzle: ['#4c1d95', '#c084fc'], corrida: ['#7f1d1d', '#f97316'],
+  rpg: ['#3f2d0e', '#d4a24c'], simulacao: ['#14532d', '#86efac'], tiro: ['#1f2937', '#9ca3af'], terror: ['#0a0a0a', '#7f1d1d'],
+};
+
 const THEMES = [
   { id: 'espaco', name: 'Espaço', emoji: '🚀' },
   { id: 'zumbis', name: 'Zumbis', emoji: '🧟' },

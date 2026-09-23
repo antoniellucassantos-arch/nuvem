@@ -299,7 +299,8 @@ function dailySales() {
 function ownGameForLive(g) {
   const e = ENGINE_BY_ID[g.engine];
   return {
-    id: 'my-' + g.id, gameId: g.id, own: true, emoji: '🕹️', name: g.name, price: 0,
+    id: 'my-' + g.id, gameId: g.id, own: true, name: g.name, price: 0,
+    emoji: THEME_BY_ID[g.theme].emoji, emoji2: GENRE_BY_ID[g.genre].emoji, colors: GENRE_COLORS[g.genre],
     ...e.play, pop: 0.3 + g.score * 0.2,
   };
 }
@@ -455,7 +456,7 @@ function renderMyGames() {
     ? S.myGames.slice().reverse().map(g => {
       const q = g.score < 4 ? 'q-bad' : g.score < 6.5 ? 'q-low' : g.score < 8.5 ? 'q-ok' : 'q-good';
       return `<div class="item">
-        <div class="slot-icon">🕹️</div>
+        ${gameCover(ownGameForLive(g), 'mini')}
         <div class="slot-info">
           <div class="slot-name">${esc(g.name)} ${g.hype > 0.6 ? '<span class="chip mini">🔥 hype</span>' : ''}</div>
           <div class="muted">${GENRE_BY_ID[g.genre].name} de ${THEME_BY_ID[g.theme].name} · ${ENGINE_BY_ID[g.engine].name} · ${PRICE_BY_ID[g.price].name} · lançado no dia ${g.day}</div>

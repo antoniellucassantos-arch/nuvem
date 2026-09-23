@@ -7,11 +7,12 @@ const CATS = {
   gpu: 'Placa de vídeo',
   storage: 'Armazenamento',
   psu: 'Fonte',
+  case: 'Gabinete',
   gear: 'Equipamento de live',
 };
 
 const CAT_ICONS = {
-  cpu: '🧠', mobo: '🟩', ram: '📏', gpu: '🎮', storage: '💾', psu: '🔌', gear: '🎙️',
+  cpu: '🧠', mobo: '🟩', ram: '📏', gpu: '🎮', storage: '💾', psu: '🔌', case: '🗄️', gear: '🎙️',
 };
 
 // Encaixes do gabinete, na ordem em que aparecem na montagem.
@@ -21,13 +22,13 @@ const SLOTS = ['cpu', 'mobo', 'ram', 'gpu', 'storage', 'psu'];
 // short, brand, fans, len, sticks, rgb, color e kind só servem para o desenho do gabinete.
 const PARTS = [
   // Processadores (o soquete precisa ser o mesmo da placa-mãe)
-  { id: 'c1', cat: 'cpu', name: 'Intel Pentium Gold G6400', short: 'Pentium', brand: 'intel', price: 350, unlock: 0, socket: 'LGA1200', score: 10, watts: 58 },
-  { id: 'c2', cat: 'cpu', name: 'Intel Core i3-10100F', short: 'Core i3', brand: 'intel', price: 600, unlock: 0, socket: 'LGA1200', score: 20, watts: 65 },
-  { id: 'c3', cat: 'cpu', name: 'AMD Ryzen 5 5600', short: 'Ryzen 5', brand: 'amd', price: 800, unlock: 50, socket: 'AM4', score: 35, watts: 65 },
-  { id: 'c4', cat: 'cpu', name: 'Intel Core i5-13400F', short: 'Core i5', brand: 'intel', price: 1300, unlock: 300, socket: 'LGA1700', score: 50, watts: 110 },
-  { id: 'c5', cat: 'cpu', name: 'AMD Ryzen 7 7800X3D', short: 'Ryzen 7', brand: 'amd', price: 2600, unlock: 1500, socket: 'AM5', score: 85, watts: 120 },
-  { id: 'c6', cat: 'cpu', name: 'Intel Core i9-14900K', short: 'Core i9', brand: 'intel', price: 3800, unlock: 3000, socket: 'LGA1700', score: 105, watts: 250 },
-  { id: 'c7', cat: 'cpu', name: 'AMD Ryzen 9 9950X3D', short: 'Ryzen 9', brand: 'amd', price: 5000, unlock: 5000, socket: 'AM5', score: 130, watts: 170 },
+  { id: 'c1', cat: 'cpu', cooler: 'stock', name: 'Intel Pentium Gold G6400', short: 'Pentium', brand: 'intel', price: 350, unlock: 0, socket: 'LGA1200', score: 10, watts: 58 },
+  { id: 'c2', cat: 'cpu', cooler: 'stock', name: 'Intel Core i3-10100F', short: 'Core i3', brand: 'intel', price: 600, unlock: 0, socket: 'LGA1200', score: 20, watts: 65 },
+  { id: 'c3', cat: 'cpu', cooler: 'stock', name: 'AMD Ryzen 5 5600', short: 'Ryzen 5', brand: 'amd', price: 800, unlock: 50, socket: 'AM4', score: 35, watts: 65 },
+  { id: 'c4', cat: 'cpu', cooler: 'tower', name: 'Intel Core i5-13400F', short: 'Core i5', brand: 'intel', price: 1300, unlock: 300, socket: 'LGA1700', score: 50, watts: 110 },
+  { id: 'c5', cat: 'cpu', cooler: 'tower', name: 'AMD Ryzen 7 7800X3D', short: 'Ryzen 7', brand: 'amd', price: 2600, unlock: 1500, socket: 'AM5', score: 85, watts: 120 },
+  { id: 'c6', cat: 'cpu', cooler: 'aio', name: 'Intel Core i9-14900K', short: 'Core i9', brand: 'intel', price: 3800, unlock: 3000, socket: 'LGA1700', score: 105, watts: 250 },
+  { id: 'c7', cat: 'cpu', cooler: 'aio', name: 'AMD Ryzen 9 9950X3D', short: 'Ryzen 9', brand: 'amd', price: 5000, unlock: 5000, socket: 'AM5', score: 130, watts: 170 },
 
   // Placas-mãe
   { id: 'm1', cat: 'mobo', name: 'ASUS Prime H410M-E', short: 'H410M', color: '#1d3350', price: 350, unlock: 0, socket: 'LGA1200', ram: 'DDR4' },
@@ -65,6 +66,13 @@ const PARTS = [
   { id: 'p3', cat: 'psu', name: 'Corsair RM750e 80 Plus Gold', short: 'RM750e', price: 700, unlock: 300, watts: 750 },
   { id: 'p4', cat: 'psu', name: 'Corsair RM1000x 80 Plus Gold', short: 'RM1000x', price: 1300, unlock: 1500, watts: 1000 },
 
+  // Gabinetes (compra única, só visual + um pouco de charme na live)
+  { id: 'k1', cat: 'case', name: 'Gabinete Básico', price: 0, unlock: 0, mult: 1, look: { theme: 'dark', fans: 1, rgb: false } },
+  { id: 'k2', cat: 'case', name: 'Rise Mode Galaxy Glass', price: 250, unlock: 0, mult: 1.03, look: { theme: 'dark', fans: 3, rgb: true } },
+  { id: 'k3', cat: 'case', name: 'Corsair 4000D Airflow Branco', price: 550, unlock: 100, mult: 1.04, look: { theme: 'light', fans: 2, rgb: false } },
+  { id: 'k4', cat: 'case', name: 'NZXT H5 Flow RGB', price: 700, unlock: 300, mult: 1.05, look: { theme: 'dark', fans: 2, rgb: true } },
+  { id: 'k5', cat: 'case', name: 'Lian Li O11 Dynamic EVO Branco', price: 1500, unlock: 1000, mult: 1.08, look: { theme: 'light', fans: 3, rgb: true } },
+
   // Equipamento de live (compra única, multiplica os espectadores)
   { id: 'e1', cat: 'gear', name: 'Microfone Fifine K669', price: 250, unlock: 0, mult: 1.1 },
   { id: 'e2', cat: 'gear', name: 'Webcam Logitech C920', price: 350, unlock: 0, mult: 1.1 },
@@ -77,14 +85,14 @@ const PARTS = [
 
 // cpu/gpu/ram = requisitos para rodar a 60 FPS. pop = popularidade do jogo.
 const GAMES = [
-  { id: 'paciencia', emoji: '🃏', name: 'Paciência Ultra', price: 0, cpu: 5, gpu: 3, ram: 4, pop: 0.5 },
-  { id: 'fogo', emoji: '🔥', name: 'Fogo Livre', price: 0, cpu: 12, gpu: 10, ram: 4, pop: 1.1 },
-  { id: 'blocks', emoji: '⛏️', name: 'Mine Blocks', price: 60, cpu: 10, gpu: 8, ram: 4, pop: 1.0 },
-  { id: 'moba', emoji: '🧙', name: 'Liga das Lendas', price: 0, cpu: 15, gpu: 12, ram: 8, pop: 1.3 },
-  { id: 'cs', emoji: '🔫', name: 'Contra-Ataque 2', price: 0, cpu: 25, gpu: 25, ram: 8, pop: 1.5 },
-  { id: 'gta', emoji: '🚗', name: 'GTZ: Cidade Grande', price: 120, cpu: 35, gpu: 45, ram: 16, pop: 2.0 },
-  { id: 'cyber', emoji: '🤖', name: 'Cyberfuturo 2099', price: 250, cpu: 60, gpu: 80, ram: 16, pop: 2.6 },
-  { id: 'simsim', emoji: '🌀', name: 'Simulador de Simulador', price: 400, cpu: 100, gpu: 130, ram: 32, pop: 3.5 },
+  { id: 'paciencia', colors: ['#0f5132', '#1b8a5a'], emoji: '🃏', name: 'Paciência Ultra', price: 0, cpu: 5, gpu: 3, ram: 4, pop: 0.5 },
+  { id: 'fogo', colors: ['#7a1f00', '#ff7a1a'], emoji: '🔥', name: 'Fogo Livre', price: 0, cpu: 12, gpu: 10, ram: 4, pop: 1.1 },
+  { id: 'blocks', colors: ['#2d5a27', '#7cb342'], emoji: '⛏️', name: 'Mine Blocks', price: 60, cpu: 10, gpu: 8, ram: 4, pop: 1.0 },
+  { id: 'moba', colors: ['#1a237e', '#7c4dff'], emoji: '🧙', name: 'Liga das Lendas', price: 0, cpu: 15, gpu: 12, ram: 8, pop: 1.3 },
+  { id: 'cs', colors: ['#3e2723', '#c49a45'], emoji: '🔫', name: 'Contra-Ataque 2', price: 0, cpu: 25, gpu: 25, ram: 8, pop: 1.5 },
+  { id: 'gta', colors: ['#0d3b66', '#f95738'], emoji: '🚗', name: 'GTZ: Cidade Grande', price: 120, cpu: 35, gpu: 45, ram: 16, pop: 2.0 },
+  { id: 'cyber', colors: ['#2b0a3d', '#f3e600'], emoji: '🤖', name: 'Cyberfuturo 2099', price: 250, cpu: 60, gpu: 80, ram: 16, pop: 2.6 },
+  { id: 'simsim', colors: ['#0b3954', '#bfd7ea'], emoji: '🌀', name: 'Simulador de Simulador', price: 400, cpu: 100, gpu: 130, ram: 32, pop: 3.5 },
 ];
 
 const GOALS = [
