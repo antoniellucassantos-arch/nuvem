@@ -45,17 +45,24 @@
             <h2>Seu PC</h2>
             <div id="pc-status"></div>
           </div>
-          <div id="slots"></div>
+          <svg id="case" class="case" viewBox="0 0 420 460" role="img" aria-label="Gabinete com as peças instaladas"></svg>
+          <p class="muted center">Clique num espaço vazio para comprar a peça.</p>
           <div class="specs" id="specs"></div>
           <button class="btn big" id="btn-power" data-action="power">⏻ Ligar PC</button>
           <pre class="terminal" id="post" hidden></pre>
         </div>
 
-        <div class="card">
-          <h2>Peças guardadas</h2>
-          <div id="inventory"></div>
-          <h3>Equipamento de live</h3>
-          <div class="chips" id="gear-list"></div>
+        <div>
+          <div class="card">
+            <h2>Peças instaladas</h2>
+            <div id="slots"></div>
+          </div>
+          <div class="card">
+            <h2>Peças guardadas</h2>
+            <div id="inventory"></div>
+            <h3>Equipamento de live</h3>
+            <div class="chips" id="gear-list"></div>
+          </div>
         </div>
       </div>
     </section>

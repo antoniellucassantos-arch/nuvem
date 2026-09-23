@@ -6,8 +6,8 @@ Jogo de navegador em que você começa com pouco dinheiro, monta um PC fraco, fa
 
 Abra o `index.html` no navegador. Não precisa instalar nada.
 
-1. **Loja:** compre processador, placa-mãe, memória, placa de vídeo, armazenamento e fonte.
-2. **Montagem:** instale as peças e aperte **Ligar PC**. Fique de olho na compatibilidade:
+1. **Loja:** compre peças reais: processadores Intel e AMD, placas-mãe ASUS, Gigabyte, ASRock e MSI, memórias Kingston, Corsair e G.Skill, placas de vídeo NVIDIA e AMD, SSDs, HDs e fontes.
+2. **Montagem:** veja as peças aparecerem dentro do gabinete, instale todas e aperte **Ligar PC**. Com o PC ligado, as ventoinhas giram e o RGB acende. Fique de olho na compatibilidade:
    - o soquete do processador precisa ser o mesmo da placa-mãe;
    - a memória precisa ser do tipo que a placa aceita (DDR4 ou DDR5);
    - a fonte precisa aguentar o consumo do PC. E cuidado com a fonte genérica… 💥

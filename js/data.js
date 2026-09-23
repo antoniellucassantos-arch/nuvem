@@ -18,53 +18,61 @@ const CAT_ICONS = {
 const SLOTS = ['cpu', 'mobo', 'ram', 'gpu', 'storage', 'psu'];
 
 // unlock = seguidores necessários para a peça aparecer na loja.
+// short, brand, fans, len, sticks, rgb, color e kind só servem para o desenho do gabinete.
 const PARTS = [
-  // Processadores (socket precisa bater com a placa-mãe)
-  { id: 'c1', cat: 'cpu', name: 'Pentak G5400', price: 350, unlock: 0, socket: 'S1', score: 10, watts: 45 },
-  { id: 'c2', cat: 'cpu', name: 'Pentak i3 X', price: 700, unlock: 0, socket: 'S1', score: 20, watts: 65 },
-  { id: 'c3', cat: 'cpu', name: 'Ryzor 5 Neo', price: 1200, unlock: 50, socket: 'S2', score: 35, watts: 65 },
-  { id: 'c4', cat: 'cpu', name: 'Pentak i7 Turbo', price: 2200, unlock: 300, socket: 'S1', score: 55, watts: 125 },
-  { id: 'c5', cat: 'cpu', name: 'Ryzor 9 Titan', price: 4000, unlock: 1500, socket: 'S2', score: 85, watts: 170 },
-  { id: 'c6', cat: 'cpu', name: 'Quantix X1', price: 8000, unlock: 5000, socket: 'S2', score: 120, watts: 200 },
+  // Processadores (o soquete precisa ser o mesmo da placa-mãe)
+  { id: 'c1', cat: 'cpu', name: 'Intel Pentium Gold G6400', short: 'Pentium', brand: 'intel', price: 350, unlock: 0, socket: 'LGA1200', score: 10, watts: 58 },
+  { id: 'c2', cat: 'cpu', name: 'Intel Core i3-10100F', short: 'Core i3', brand: 'intel', price: 600, unlock: 0, socket: 'LGA1200', score: 20, watts: 65 },
+  { id: 'c3', cat: 'cpu', name: 'AMD Ryzen 5 5600', short: 'Ryzen 5', brand: 'amd', price: 800, unlock: 50, socket: 'AM4', score: 35, watts: 65 },
+  { id: 'c4', cat: 'cpu', name: 'Intel Core i5-13400F', short: 'Core i5', brand: 'intel', price: 1300, unlock: 300, socket: 'LGA1700', score: 50, watts: 110 },
+  { id: 'c5', cat: 'cpu', name: 'AMD Ryzen 7 7800X3D', short: 'Ryzen 7', brand: 'amd', price: 2600, unlock: 1500, socket: 'AM5', score: 85, watts: 120 },
+  { id: 'c6', cat: 'cpu', name: 'Intel Core i9-14900K', short: 'Core i9', brand: 'intel', price: 3800, unlock: 3000, socket: 'LGA1700', score: 105, watts: 250 },
+  { id: 'c7', cat: 'cpu', name: 'AMD Ryzen 9 9950X3D', short: 'Ryzen 9', brand: 'amd', price: 5000, unlock: 5000, socket: 'AM5', score: 130, watts: 170 },
 
   // Placas-mãe
-  { id: 'm1', cat: 'mobo', name: 'Placa Básica H1', price: 250, unlock: 0, socket: 'S1', ram: 'DDR4' },
-  { id: 'm2', cat: 'mobo', name: 'Placa Gamer B2', price: 500, unlock: 50, socket: 'S2', ram: 'DDR4' },
-  { id: 'm3', cat: 'mobo', name: 'Placa Pro Z5', price: 1100, unlock: 300, socket: 'S1', ram: 'DDR5' },
-  { id: 'm4', cat: 'mobo', name: 'Placa Extreme X7', price: 1500, unlock: 1500, socket: 'S2', ram: 'DDR5' },
+  { id: 'm1', cat: 'mobo', name: 'ASUS Prime H410M-E', short: 'H410M', color: '#1d3350', price: 350, unlock: 0, socket: 'LGA1200', ram: 'DDR4' },
+  { id: 'm2', cat: 'mobo', name: 'Gigabyte A520M K V2', short: 'A520M', color: '#2a2c33', price: 400, unlock: 50, socket: 'AM4', ram: 'DDR4' },
+  { id: 'm3', cat: 'mobo', name: 'ASRock B550M Steel Legend', short: 'B550M', color: '#4a5058', price: 800, unlock: 300, socket: 'AM4', ram: 'DDR4' },
+  { id: 'm4', cat: 'mobo', name: 'MSI PRO B760M-A DDR4', short: 'B760M', color: '#23262d', price: 900, unlock: 300, socket: 'LGA1700', ram: 'DDR4' },
+  { id: 'm5', cat: 'mobo', name: 'Gigabyte B650 AORUS Elite AX', short: 'B650', color: '#1c1e24', price: 1400, unlock: 1500, socket: 'AM5', ram: 'DDR5' },
+  { id: 'm6', cat: 'mobo', name: 'ASUS ROG Strix Z790-E Gaming', short: 'Z790', color: '#1a1a1f', price: 2800, unlock: 3000, socket: 'LGA1700', ram: 'DDR5' },
+  { id: 'm7', cat: 'mobo', name: 'ASUS ROG Crosshair X870E Hero', short: 'X870E', color: '#141418', price: 3800, unlock: 5000, socket: 'AM5', ram: 'DDR5' },
 
   // Memória RAM
-  { id: 'r1', cat: 'ram', name: 'Pente 4GB DDR4', price: 120, unlock: 0, gb: 4, type: 'DDR4' },
-  { id: 'r2', cat: 'ram', name: 'Pente 8GB DDR4', price: 250, unlock: 0, gb: 8, type: 'DDR4' },
-  { id: 'r3', cat: 'ram', name: 'Kit 16GB DDR4', price: 450, unlock: 50, gb: 16, type: 'DDR4' },
-  { id: 'r4', cat: 'ram', name: 'Kit 16GB DDR5', price: 700, unlock: 300, gb: 16, type: 'DDR5' },
-  { id: 'r5', cat: 'ram', name: 'Kit 32GB DDR5 RGB', price: 1300, unlock: 1500, gb: 32, type: 'DDR5' },
+  { id: 'r1', cat: 'ram', name: 'Kingston Fury Beast 4GB DDR4', price: 120, unlock: 0, gb: 4, type: 'DDR4', sticks: 1 },
+  { id: 'r2', cat: 'ram', name: 'Kingston Fury Beast 8GB DDR4', price: 200, unlock: 0, gb: 8, type: 'DDR4', sticks: 1 },
+  { id: 'r3', cat: 'ram', name: 'Corsair Vengeance LPX 16GB (2x8GB) DDR4', price: 400, unlock: 50, gb: 16, type: 'DDR4', sticks: 2 },
+  { id: 'r4', cat: 'ram', name: 'Corsair Vengeance RGB Pro 32GB (2x16GB) DDR4', price: 800, unlock: 300, gb: 32, type: 'DDR4', sticks: 2, rgb: true },
+  { id: 'r5', cat: 'ram', name: 'Kingston Fury Beast 32GB (2x16GB) DDR5', price: 1100, unlock: 1500, gb: 32, type: 'DDR5', sticks: 2 },
+  { id: 'r6', cat: 'ram', name: 'G.Skill Trident Z5 RGB 64GB (2x32GB) DDR5', price: 2500, unlock: 5000, gb: 64, type: 'DDR5', sticks: 2, rgb: true },
 
   // Placas de vídeo
-  { id: 'g1', cat: 'gpu', name: 'GeForça GT 710', price: 300, unlock: 0, score: 8, watts: 20 },
-  { id: 'g2', cat: 'gpu', name: 'Radeonix RX 550', price: 600, unlock: 0, score: 18, watts: 50 },
-  { id: 'g3', cat: 'gpu', name: 'GeForça GTX 1650', price: 1100, unlock: 50, score: 30, watts: 75 },
-  { id: 'g4', cat: 'gpu', name: 'Radeonix RX 6600', price: 1900, unlock: 300, score: 55, watts: 130 },
-  { id: 'g5', cat: 'gpu', name: 'GeForça RTX 3070', price: 3500, unlock: 1500, score: 85, watts: 220 },
-  { id: 'g6', cat: 'gpu', name: 'GeForça RTX 4090', price: 10000, unlock: 5000, score: 150, watts: 450 },
+  { id: 'g1', cat: 'gpu', name: 'NVIDIA GeForce GT 710', short: 'GT 710', brand: 'nvidia', price: 300, unlock: 0, score: 8, watts: 20, fans: 0, len: 110 },
+  { id: 'g2', cat: 'gpu', name: 'AMD Radeon RX 550', short: 'RX 550', brand: 'amd', price: 550, unlock: 0, score: 18, watts: 50, fans: 1, len: 150 },
+  { id: 'g3', cat: 'gpu', name: 'NVIDIA GeForce GTX 1650', short: 'GTX 1650', brand: 'nvidia', price: 900, unlock: 50, score: 30, watts: 75, fans: 2, len: 180 },
+  { id: 'g4', cat: 'gpu', name: 'AMD Radeon RX 6600', short: 'RX 6600', brand: 'amd', price: 1400, unlock: 300, score: 55, watts: 132, fans: 2, len: 200 },
+  { id: 'g5', cat: 'gpu', name: 'NVIDIA GeForce RTX 4070', short: 'RTX 4070', brand: 'nvidia', price: 3800, unlock: 1500, score: 90, watts: 200, fans: 3, len: 240 },
+  { id: 'g6', cat: 'gpu', name: 'NVIDIA GeForce RTX 5090', short: 'RTX 5090', brand: 'nvidia', price: 15000, unlock: 5000, score: 160, watts: 575, fans: 3, len: 265 },
 
-  // Armazenamento (velocidade melhora a retenção do público)
-  { id: 's1', cat: 'storage', name: 'HD 500GB', price: 150, unlock: 0, speed: 1 },
-  { id: 's2', cat: 'storage', name: 'SSD 240GB', price: 200, unlock: 0, speed: 2 },
-  { id: 's3', cat: 'storage', name: 'SSD NVMe 1TB', price: 500, unlock: 300, speed: 3 },
+  // Armazenamento (a velocidade melhora a retenção do público)
+  { id: 's1', cat: 'storage', name: 'Seagate BarraCuda 500GB (HD)', kind: 'hdd', price: 150, unlock: 0, speed: 1 },
+  { id: 's2', cat: 'storage', name: 'Kingston A400 240GB (SSD SATA)', kind: 'ssd', price: 180, unlock: 0, speed: 2 },
+  { id: 's3', cat: 'storage', name: 'Samsung 990 PRO 1TB (SSD NVMe)', kind: 'nvme', price: 600, unlock: 300, speed: 3 },
 
   // Fontes (a genérica pode explodir se ficar sobrecarregada)
-  { id: 'p1', cat: 'psu', name: 'Fonte Genérica 300W', price: 120, unlock: 0, watts: 300, generic: true },
-  { id: 'p2', cat: 'psu', name: 'Fonte 500W 80 Plus', price: 300, unlock: 0, watts: 500 },
-  { id: 'p3', cat: 'psu', name: 'Fonte 750W Gold', price: 600, unlock: 300, watts: 750 },
-  { id: 'p4', cat: 'psu', name: 'Fonte 1000W Platinum', price: 1100, unlock: 1500, watts: 1000 },
+  { id: 'p1', cat: 'psu', name: 'Fonte Genérica 300W', short: 'GENÉRICA', price: 120, unlock: 0, watts: 300, generic: true },
+  { id: 'p2', cat: 'psu', name: 'Corsair CV550 80 Plus Bronze', short: 'CV550', price: 350, unlock: 0, watts: 550 },
+  { id: 'p3', cat: 'psu', name: 'Corsair RM750e 80 Plus Gold', short: 'RM750e', price: 700, unlock: 300, watts: 750 },
+  { id: 'p4', cat: 'psu', name: 'Corsair RM1000x 80 Plus Gold', short: 'RM1000x', price: 1300, unlock: 1500, watts: 1000 },
 
-  // Equipamento de live (compra única, multiplica espectadores)
-  { id: 'e1', cat: 'gear', name: 'Webcam HD', price: 250, unlock: 0, mult: 1.1 },
-  { id: 'e2', cat: 'gear', name: 'Microfone condensador', price: 300, unlock: 0, mult: 1.15 },
-  { id: 'e3', cat: 'gear', name: 'Ring light', price: 200, unlock: 100, mult: 1.1 },
-  { id: 'e4', cat: 'gear', name: 'Cadeira gamer', price: 800, unlock: 300, mult: 1.08 },
-  { id: 'e5', cat: 'gear', name: 'Tela verde (chroma key)', price: 400, unlock: 1000, mult: 1.12 },
+  // Equipamento de live (compra única, multiplica os espectadores)
+  { id: 'e1', cat: 'gear', name: 'Microfone Fifine K669', price: 250, unlock: 0, mult: 1.1 },
+  { id: 'e2', cat: 'gear', name: 'Webcam Logitech C920', price: 350, unlock: 0, mult: 1.1 },
+  { id: 'e3', cat: 'gear', name: 'Ring light 10"', price: 150, unlock: 50, mult: 1.08 },
+  { id: 'e4', cat: 'gear', name: 'Microfone HyperX QuadCast S', price: 800, unlock: 300, mult: 1.12 },
+  { id: 'e5', cat: 'gear', name: 'Cadeira DT3 Sports', price: 1300, unlock: 300, mult: 1.06 },
+  { id: 'e6', cat: 'gear', name: 'Elgato Green Screen', price: 900, unlock: 1000, mult: 1.12 },
+  { id: 'e7', cat: 'gear', name: 'Elgato Stream Deck MK.2', price: 1200, unlock: 1500, mult: 1.1 },
 ];
 
 // cpu/gpu/ram = requisitos para rodar a 60 FPS. pop = popularidade do jogo.

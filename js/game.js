@@ -1,6 +1,6 @@
 'use strict';
 
-const SAVE_KEY = 'inforeal-save-v1';
+const SAVE_KEY = 'inforeal-save-v2';
 const START_MONEY = 1500;
 const TICK_MS = 700;          // duração real de cada "pedaço" da live
 const TICKS_PER_HOUR = 6;     // cada tick = 10 minutos no jogo
@@ -390,11 +390,142 @@ function partSpec(p) {
     case 'mobo': return `Soquete ${p.socket} · Memória ${p.ram}`;
     case 'ram': return `${p.gb}GB ${p.type}`;
     case 'gpu': return `Força ${p.score} · ${p.watts}W`;
-    case 'storage': return `Velocidade ${'★'.repeat(p.speed)}${'☆'.repeat(3 - p.speed)}`;
+    case 'storage': return `${{ hdd: 'HD', ssd: 'SSD SATA', nvme: 'SSD NVMe' }[p.kind]} · Velocidade ${'★'.repeat(p.speed)}${'☆'.repeat(3 - p.speed)}`;
     case 'psu': return `${p.watts}W${p.generic ? ' · ⚠️ genérica, pode explodir' : ''}`;
     case 'gear': return `+${Math.round((p.mult - 1) * 100)}% espectadores`;
   }
   return '';
+}
+
+/* ---------- Desenho do gabinete ---------- */
+
+const BRAND_COLORS = { intel: '#0071c5', amd: '#ed1c24', nvidia: '#76b900' };
+
+function svgFan(cx, cy, r, cls = '') {
+  const blades = [0, 90, 180, 270].map(a =>
+    `<ellipse cx="${cx}" cy="${cy - r * 0.45}" rx="${r * 0.24}" ry="${r * 0.42}" transform="rotate(${a + 20} ${cx} ${cy})"/>`,
+  ).join('');
+  return `<g class="fan ${cls}">
+    <circle class="fan-ring" cx="${cx}" cy="${cy}" r="${r}"/>
+    <g class="blades"><circle cx="${cx}" cy="${cy}" r="${r * 0.9}" fill="none"/>${blades}</g>
+    <circle class="fan-hub" cx="${cx}" cy="${cy}" r="${r * 0.22}"/>
+  </g>`;
+}
+
+function svgEmpty(x, y, w, h, cat, label = CATS[cat], ty = y + h / 2) {
+  return `<g class="empty-part" data-action="shop-cat" data-cat="${cat}">
+    <title>Comprar ${CATS[cat]}</title>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5"/>
+    <text x="${x + w / 2}" y="${ty}">+ ${label}</text>
+  </g>`;
+}
+
+function renderCase(b) {
+  const { cpu, mobo, ram, gpu, storage, psu } = b.parts;
+  const out = [];
+
+  // Carcaça, interior e ventoinhas frontais
+  out.push(`<rect class="case-shell" x="8" y="8" width="404" height="444" rx="16"/>
+    <rect class="case-inside" x="22" y="22" width="376" height="416" rx="10"/>
+    <circle class="led" cx="380" cy="15" r="4"/>
+    ${[90, 170, 250].map(cy => svgFan(372, cy, 22, 'front-fan')).join('')}`);
+
+  // Placa-mãe
+  if (mobo) {
+    out.push(`<g><title>${mobo.name}</title>
+      <rect x="40" y="40" width="250" height="270" rx="4" fill="${mobo.color}" stroke="#454b5c"/>
+      <path class="traces" d="M70 180 H180 M70 188 H150 M230 180 V300 M240 190 V300 M60 60 V160"/>
+      <rect x="40" y="48" width="18" height="80" fill="#3b3f4b"/>
+      <rect x="84" y="56" width="92" height="12" rx="2" fill="#30343f"/>
+      <rect x="66" y="72" width="12" height="80" rx="2" fill="#30343f"/>
+      <rect x="62" y="211" width="170" height="7" rx="2" fill="#0d0f14"/>
+      <rect x="70" y="264" width="96" height="14" rx="2" fill="#0d0f14"/>
+      ${[208, 220, 232, 244].map(x => `<rect x="${x}" y="68" width="7" height="104" rx="1" fill="#0d0f14"/>`).join('')}
+      <text class="board-label" x="282" y="302">${mobo.short}</text>
+    </g>`);
+  } else {
+    out.push(svgEmpty(40, 40, 250, 270, 'mobo', CATS.mobo, 290));
+  }
+
+  // Processador + cooler
+  if (cpu) {
+    out.push(`<g><title>${cpu.name}</title>
+      <rect x="92" y="76" width="76" height="76" rx="6" fill="#1b1d24" stroke="#4b5163"/>
+      ${svgFan(130, 114, 30)}
+      <rect x="92" y="76" width="76" height="5" rx="2" fill="${BRAND_COLORS[cpu.brand]}"/>
+      <text class="part-label" x="130" y="164">${cpu.short}</text>
+    </g>`);
+  } else {
+    out.push(svgEmpty(92, 76, 76, 76, 'cpu', 'CPU'));
+  }
+
+  // Memória RAM
+  if (ram) {
+    const slots = ram.sticks === 1 ? [220] : [208, 232];
+    out.push(`<g><title>${ram.name}</title>${slots.map(x => `
+      <rect x="${x - 1}" y="66" width="9" height="108" rx="1" fill="#2b2f3b" stroke="#50566a"/>
+      <rect class="${ram.rgb ? 'rgb' : 'ram-top'}" x="${x - 1}" y="66" width="9" height="12" rx="1"/>`).join('')}
+    </g>`);
+  } else {
+    out.push(svgEmpty(200, 66, 56, 108, 'ram', 'RAM'));
+  }
+
+  // Placa de vídeo
+  if (gpu) {
+    const fans = Array.from({ length: gpu.fans }, (_, i) =>
+      svgFan(44 + gpu.len * (i + 0.5) / gpu.fans, 234, 17)).join('');
+    const fins = gpu.fans ? '' : Array.from({ length: 9 }, (_, i) =>
+      `<rect x="${62 + i * 8}" y="220" width="3" height="28" fill="#6b7280"/>`).join('');
+    out.push(`<g><title>${gpu.name}</title>
+      <rect x="44" y="208" width="${gpu.len}" height="50" rx="5" fill="#1d2029" stroke="#4b5163"/>
+      <rect class="gpu-stripe" x="44" y="208" width="${gpu.len}" height="4" rx="2" fill="${BRAND_COLORS[gpu.brand]}"/>
+      ${fans}${fins}
+      <text class="part-label" x="${44 + gpu.len - 6}" y="270" text-anchor="end">${gpu.short}</text>
+    </g>`);
+  } else {
+    out.push(svgEmpty(60, 208, 180, 50, 'gpu', 'Placa de vídeo'));
+  }
+
+  // Cobertura da fonte (shroud)
+  out.push(`<rect class="shroud" x="22" y="330" width="376" height="108" rx="6"/>
+    <text class="shroud-logo" x="210" y="344">INFOREAL</text>`);
+
+  // Fonte
+  if (psu) {
+    out.push(`<g><title>${psu.name}</title>
+      <rect x="36" y="354" width="150" height="72" rx="4" fill="${psu.generic ? '#7a7f88' : '#15161b'}" stroke="#555b6b"/>
+      <circle cx="96" cy="390" r="28" fill="none" stroke="${psu.generic ? '#4b4f57' : '#3a3f4d'}" stroke-width="2" stroke-dasharray="3 3"/>
+      <rect x="132" y="366" width="46" height="18" rx="2" fill="${psu.generic ? '#e9e3c8' : '#2a2d37'}"/>
+      <text class="psu-label ${psu.generic ? 'generic' : ''}" x="155" y="378">${psu.watts}W</text>
+      <text class="psu-label ${psu.generic ? 'generic' : ''}" x="155" y="408">${psu.short}</text>
+    </g>`);
+  } else {
+    out.push(svgEmpty(36, 354, 150, 72, 'psu'));
+  }
+
+  // Armazenamento
+  if (storage && storage.kind === 'nvme') {
+    out.push(`<g><title>${storage.name}</title>
+      <rect x="72" y="265" width="92" height="12" rx="2" fill="#1f5f3f" stroke="#2f8f5f"/>
+      <rect x="96" y="267" width="30" height="8" fill="#15161b"/>
+      <text class="tiny-label" x="148" y="274">NVMe</text>
+    </g>`);
+  } else if (storage) {
+    const hdd = storage.kind === 'hdd';
+    out.push(`<g><title>${storage.name}</title>
+      <rect x="${hdd ? 258 : 268}" y="${hdd ? 358 : 368}" width="${hdd ? 110 : 90}" height="${hdd ? 64 : 44}" rx="4"
+        fill="${hdd ? '#a3a9b3' : '#20232c'}" stroke="#666d7c"/>
+      ${hdd ? '<rect x="272" y="368" width="54" height="44" rx="3" fill="#e5e7eb"/><circle cx="348" cy="390" r="12" fill="#8b919c"/>' : ''}
+      <text class="part-label ${hdd ? 'dark' : ''}" x="${hdd ? 299 : 313}" y="${hdd ? 394 : 394}">${hdd ? 'HD' : 'SSD'}</text>
+    </g>`);
+  }
+  if (!storage) out.push(svgEmpty(258, 358, 110, 64, 'storage', 'Disco'));
+
+  // Reflexo do vidro lateral
+  out.push(`<path class="glass" d="M22 22 H180 L60 438 H22 Z"/>`);
+
+  $('#case').innerHTML = out.join('');
+  $('#case').classList.toggle('on', S.pcOn);
 }
 
 function render() {
@@ -419,6 +550,7 @@ function renderBuild() {
   const lock = live || booting ? 'disabled' : '';
 
   $('#welcome').hidden = S.stats.lives > 0 || S.pcOn;
+  renderCase(b);
 
   $('#slots').innerHTML = SLOTS.map(slot => {
     const p = b.parts[slot];
@@ -568,6 +700,7 @@ document.addEventListener('click', e => {
     case 'sell': return sellPart(Number(d.uid));
     case 'remove': return removePart(d.slot);
     case 'filter': shopFilter = d.cat; return renderShop();
+    case 'shop-cat': shopFilter = d.cat; renderShop(); return showTab('shop');
     case 'power': return powerOn();
     case 'pick-game': selectedGame = d.id; return renderLive();
     case 'buy-game': return buyGame(d.id);
