@@ -207,7 +207,8 @@ function renderCase(b) {
   const svg = $('#case');
   svg.innerHTML = caseMarkup(b);
   svg.classList.toggle('on', S.pcOn);
-  svg.classList.toggle('case-light', c.look.theme === 'light');
+  svg.classList.remove('case-light', 'case-beige', 'case-dark');
+  svg.classList.add('case-' + c.look.theme);
   svg.classList.toggle('case-rgb', c.look.rgb);
 }
 
@@ -228,7 +229,7 @@ function partThumb(p) {
     case 'storage':
       return p.kind === 'nvme' ? svg('64 250 108 40', drawStorage(p)) : svg('250 350 126 80', drawStorage(p));
     case 'psu': return svg('30 348 162 84', drawPsu(p));
-    case 'case': return svg('0 0 420 460', drawShell(p, true), p.look.theme === 'light' ? 'case-light' : '');
+    case 'case': return svg('0 0 420 460', drawShell(p, true), 'case-' + p.look.theme);
     default: return `<div class="thumb emoji">${CAT_ICONS[p.cat]}</div>`;
   }
 }

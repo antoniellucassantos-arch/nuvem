@@ -1,6 +1,6 @@
 'use strict';
 
-const SAVE_KEY = 'inforeal-save-v2';
+const SAVE_KEY = RETRO ? 'inforeal-save-retro' : 'inforeal-save-v2';
 const START_MONEY = 1500;
 const TICK_MS = 700;          // duração real de cada "pedaço" da live
 const TICKS_PER_HOUR = 6;     // cada tick = 10 minutos no jogo
@@ -753,7 +753,7 @@ function renderDesk(b) {
     <div class="keyboard"></div>
     <div class="mouse"></div>
     ${has('e7') ? '<div class="streamdeck" title="Stream Deck"></div>' : ''}
-    <svg class="case mini-case ${S.pcOn ? 'on' : ''} ${c.look.theme === 'light' ? 'case-light' : ''}" viewBox="0 0 420 460"
+    <svg class="case mini-case ${S.pcOn ? 'on' : ''} case-${c.look.theme}" viewBox="0 0 420 460"
       role="img" aria-label="Seu PC">${caseMarkup(b, true)}</svg>`;
 }
 

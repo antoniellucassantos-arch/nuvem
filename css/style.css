@@ -615,3 +615,28 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 .rank li.me { background: rgba(124, 92, 255, .18); font-weight: 700; }
 .decor { position: absolute; left: 16px; top: 56px; display: flex; flex-wrap: wrap; gap: 10px; max-width: 30%; font-size: 1.8rem; }
 @media (max-width: 720px) { .decor { font-size: 1.2rem; max-width: 40%; } }
+
+/* Pacote 3: anos 2000 */
+.logo small { font-size: .8rem; color: var(--warn); }
+.case-beige .case-shell { fill: #d8cfb5; stroke: #a89f86; }
+.case-beige .case-inside { fill: #2a2820; }
+.case-beige .case-foot { fill: #a89f86; }
+.case-beige .shroud { fill: #c9c0a5; stroke: #a89f86; }
+.case-beige .front-fan .fan-ring { fill: #e6dfca; stroke: #a89f86; }
+.retro .screen { border: 26px solid #d8cfb5; border-radius: 34px; box-shadow: inset 0 0 40px rgba(0, 0, 0, .6), 0 12px 40px rgba(0, 0, 0, .55); }
+.retro .screen::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 5; border-radius: 10px;
+  background: repeating-linear-gradient(rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, .5);
+}
+.retro .monitor-neck { width: 140px; height: 26px; background: #c9c0a5; }
+.retro .monitor-base { background: #bdb498; }
+.retro .webcam { background: #d8cfb5; }
+.retro .os { background: linear-gradient(#4a90e2 0 58%, #5cae3c 58%); }
+.retro .taskbar { background: linear-gradient(#3168d5, #1e4db7); }
+.retro .task-apps::before { content: ""; }
+.retro .os-hint { background: #ffffe1; color: #111; border: 1px solid #333; animation: none; }
+.retro .window { border: 3px solid #0a58d6; border-radius: 8px 8px 0 0; }
+.retro .win-bar { background: linear-gradient(#0a5ce8, #003dc8); color: #fff; }
+.retro .keyboard { background: repeating-linear-gradient(90deg, #e6dfca 0 14px, #bdb498 14px 16px); box-shadow: 0 0 0 3px #a89f86; }
+.retro .mouse { background: #e6dfca; box-shadow: 0 0 0 2px #a89f86; }

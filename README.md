@@ -29,7 +29,7 @@ Com 300 seguidores você desbloqueia a aba **Dev**:
 4. **Programe e corrija bugs**. Um processador mais forte programa mais rápido.
 5. **Lance** e receba as notas da crítica. O jogo vende todo dia, e fazer live dele dá hype e aumenta as vendas.
 
-O progresso fica salvo no navegador. Para levar o save de um aparelho para outro, use **Objetivos → Levar o save para outro aparelho** (exportar e importar um código).
+O progresso fica salvo no navegador. Em **Objetivos → Modo anos 2000** dá para começar um save separado em 2004, com gabinete bege, monitor de tubo e internet discada. Para levar o save de um aparelho para outro, use **Objetivos → Levar o save para outro aparelho** (exportar e importar um código).
 
 ### Fase 3: IA criadora de jogos (aba IA)
 
@@ -53,6 +53,7 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 - `js/extras.js`: a mãe, usados com golpe, overclock, vírus, capivara pet, casas e IA consciente
 - `js/pack1.js`: exportar/importar save, conquistas secretas, sons, tendências da semana, crise dos chips e personagem
 - `js/pack2.js`: aba Carreira (funcionários, campeonatos, collab, skins, ranking de rivais) e decoração do quarto
+- `js/retro.js` e `js/retro-ui.js`: modo anos 2000 (save separado, peças e jogos da época, monitor de tubo, internet discada)
 - `js/releases.js`: lançamentos do mercado (peças e jogos novos com o passar dos dias)
 - `js/dev-data.js`: dados da Fase 2 (ferramentas, gêneros, temas, cursos)
 - `js/dev.js`: lógica da Fase 2 (estudar, programar, lançar e vender)
