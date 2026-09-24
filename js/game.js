@@ -353,12 +353,12 @@ function liveTick() {
   L.peak = Math.max(L.peak, L.viewers);
 
   // Quanto maior o público, menos cada espectador rende (anúncios e inscrições diluem).
-  const income = L.viewers * 0.8 / Math.sqrt(1 + L.viewers / 500);
+  const income = L.viewers * 0.5 / Math.sqrt(1 + L.viewers / 500);
   L.earned += income;
   S.money += income;
 
   // Fica cada vez mais difícil ganhar seguidores quando você já é famoso.
-  const newFollowers = L.viewers * 0.15 * L.q.mult * rand(0.5, 1.5) / (1 + S.followers / 2e6);
+  const newFollowers = L.viewers * 0.035 * L.q.mult * rand(0.5, 1.5) / (1 + S.followers / 5e5);
   L.followers += newFollowers;
   S.followers += newFollowers;
 

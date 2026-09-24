@@ -233,18 +233,18 @@ function projectQuality(P) {
   let diff = 0, skillF = 0;
   for (const k in SKILLS) {
     diff += Math.abs(P.focus[k] - g.w[k]);
-    skillF += g.w[k] * (1 + skillLevel(k) * 0.3);
+    skillF += g.w[k] * (1 + skillLevel(k) * 0.15);
   }
   let fit = 1 - diff / 2;
   // Jogos feitos pela IA usam o nível dela no lugar dos seus conhecimentos.
   if (P.ai) {
-    skillF = 1 + P.aiLevel * 0.32;
+    skillF = 1 + P.aiLevel * 0.16;
     fit = Math.min(1, 0.8 + P.aiLevel * 0.02);
   }
   const combo = COMBOS[`${P.genre}+${P.theme}`] || 1;
   const penalty = Math.min(0.6, (P.bugs / P.target) * 1.2);
   const raw = skillF * e.mult * combo * (0.55 + 0.45 * fit) * (1 + P.bonus) * (1 - penalty);
-  const expectation = 1.4 * (1 + 0.18 * Math.min(S.myGames.length, 15));
+  const expectation = 1.4 * (1 + 0.1 * Math.min(S.myGames.length, 40));
   const score = Math.round(Math.min(10, Math.max(1, 10 * raw / expectation)) * 10) / 10;
   return { score, fit, combo, penalty, engine: e, genre: g };
 }
@@ -273,7 +273,7 @@ function salesFor(game) {
   const size = SIZE_BY_ID[game.size];
   const price = PRICE_BY_ID[game.price];
   const age = S.day - game.day;
-  const base = (30 + 3 * Math.pow(S.followers, 0.6)) * Math.pow(game.score / 10, 2.5) * size.sales * price.units
+  const base = (20 + 1.5 * Math.pow(S.followers, 0.6)) * Math.pow(game.score / 10, 2.5) * size.sales * price.units
     * Math.pow(0.85, age) * (1 + game.hype);
   return Math.round(base * rand(0.85, 1.15));
 }
