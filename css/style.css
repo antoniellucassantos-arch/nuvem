@@ -607,3 +607,11 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 .ach.done { color: var(--text); }
 #save-code { width: 100%; background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; font-family: ui-monospace, monospace; font-size: .75rem; margin-bottom: 8px; }
 @media (max-width: 720px) { .avatar-editor { grid-template-columns: 1fr; } .avatar-preview { margin: 0 auto; } }
+
+/* Pacote 2 */
+#tab-career .grid-2 { margin-bottom: 16px; }
+.rank { list-style: none; padding: 0; margin: 0; }
+.rank li { display: grid; grid-template-columns: 36px 1fr auto; gap: 8px; padding: 8px; border-radius: 8px; }
+.rank li.me { background: rgba(124, 92, 255, .18); font-weight: 700; }
+.decor { position: absolute; left: 16px; top: 56px; display: flex; flex-wrap: wrap; gap: 10px; max-width: 30%; font-size: 1.8rem; }
+@media (max-width: 720px) { .decor { font-size: 1.2rem; max-width: 40%; } }

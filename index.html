@@ -30,6 +30,7 @@
     <button class="tab" data-tab="dev">💻 Dev</button>
     <button class="tab" data-tab="ai">🤖 IA</button>
     <button class="tab" data-tab="lab">🧬 Lab</button>
+    <button class="tab" data-tab="career">🏢 Carreira</button>
     <button class="tab" data-tab="goals">🏆 Objetivos</button>
   </nav>
 
@@ -86,6 +87,7 @@
       <div class="desk" id="desk">
         <div class="wall">
           <div class="plaques" id="desk-plaques"></div>
+          <div class="decor" id="desk-decor"></div>
           <div class="ringlight" id="desk-ring" hidden></div>
           <div class="chair" id="desk-chair" hidden></div>
         </div>
@@ -275,6 +277,16 @@
       </div>
     </section>
 
+    <section id="tab-career" hidden>
+      <div class="grid-2">
+        <div class="card"><h2>📊 Ranking de streamers</h2><ol class="rank" id="rank-list"></ol></div>
+        <div class="card"><h2>👥 Sua equipe</h2><div id="staff-list"></div></div>
+        <div class="card" id="tourney-card"></div>
+        <div class="card" id="collab-card"></div>
+      </div>
+      <div class="card"><h2>🎨 Skins nos seus jogos</h2><div id="skins-list"></div></div>
+    </section>
+
     <section id="tab-goals" hidden>
       <div class="grid-2">
         <div class="card">
@@ -323,5 +335,6 @@
   <script src="js/extras.js"></script>
   <script src="js/game.js"></script>
   <script src="js/pack1.js"></script>
+  <script src="js/pack2.js"></script>
 </body>
 </html>

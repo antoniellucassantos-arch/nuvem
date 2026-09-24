@@ -52,6 +52,7 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 - `js/events.js`: eventos aleatórios (fonte explodindo, raids, queda de luz...)
 - `js/extras.js`: a mãe, usados com golpe, overclock, vírus, capivara pet, casas e IA consciente
 - `js/pack1.js`: exportar/importar save, conquistas secretas, sons, tendências da semana, crise dos chips e personagem
+- `js/pack2.js`: aba Carreira (funcionários, campeonatos, collab, skins, ranking de rivais) e decoração do quarto
 - `js/releases.js`: lançamentos do mercado (peças e jogos novos com o passar dos dias)
 - `js/dev-data.js`: dados da Fase 2 (ferramentas, gêneros, temas, cursos)
 - `js/dev.js`: lógica da Fase 2 (estudar, programar, lançar e vender)

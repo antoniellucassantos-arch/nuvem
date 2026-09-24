@@ -89,6 +89,12 @@ const PARTS = [
   { id: 'e10', cat: 'gear', name: 'Monitor LG UltraGear 27" 144Hz', price: 1600, unlock: 300, mult: 1.04, monitor: 'big' },
   { id: 'e12', cat: 'gear', name: 'Pasta térmica Arctic MX-6', price: 60, unlock: 0, mult: 1, desc: 'Metade do risco de queimar no overclock' },
   { id: 'e13', cat: 'gear', name: 'Antivírus', price: 200, unlock: 0, mult: 1, desc: 'Remove e bloqueia vírus de jogo pirata' },
+  { id: 'd1', cat: 'gear', name: 'Pôster do seu jogo favorito', price: 80, unlock: 0, mult: 1.01, decor: '🖼️' },
+  { id: 'd2', cat: 'gear', name: 'Planta na mesa', price: 60, unlock: 0, mult: 1.01, decor: '🪴' },
+  { id: 'd3', cat: 'gear', name: 'Letreiro neon "LIVE"', price: 600, unlock: 100, mult: 1.04, decor: '🔴' },
+  { id: 'd4', cat: 'gear', name: 'Prateleira de bonecos', price: 900, unlock: 300, mult: 1.03, decor: '🦸' },
+  { id: 'd5', cat: 'gear', name: 'Fita de LED na parede', price: 250, unlock: 50, mult: 1.02, decor: '🌈' },
+  { id: 'd6', cat: 'gear', name: 'Capivara de pelúcia gigante', price: 350, unlock: 0, mult: 1.03, decor: '🦫' },
   { id: 'e11', cat: 'gear', name: 'Monitor Samsung Odyssey G9 49" Ultrawide', price: 7000, unlock: 3000, mult: 1.08, monitor: 'ultra' },
 
   // Casas (compra única; cada uma dá +10 de energia máxima)
