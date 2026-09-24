@@ -1,6 +1,6 @@
 'use strict';
 
-const SAVE_KEY = RETRO ? 'inforeal-save-retro' : 'inforeal-save-v2';
+const SAVE_KEY = RETRO ? 'inforeal-save-retro' : FUTURE ? 'inforeal-save-2077' : 'inforeal-save-v2';
 const START_MONEY = 1500;
 const TICK_MS = 700;          // duração real de cada "pedaço" da live
 const TICKS_PER_HOUR = 6;     // cada tick = 10 minutos no jogo

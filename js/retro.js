@@ -3,10 +3,13 @@
 // Pacote 3: modo anos 2000. Save separado, peças e jogos da época, monitor de tubo,
 // Windows "InfoOS XP" e internet discada. Carregado antes de game.js: troca as listas.
 
-const RETRO = (() => { try { return localStorage.getItem('inforeal-mode') === 'retro'; } catch { return false; } })();
+// Era do jogo: 'modern' (hoje), 'retro' (anos 2000) ou 'future' (2077). Cada era tem save próprio.
+const GAME_MODE = (() => { try { return localStorage.getItem('inforeal-mode') || 'modern'; } catch { return 'modern'; } })();
+const RETRO = GAME_MODE === 'retro';
+const FUTURE = GAME_MODE === 'future';
 
-function setMode(retro) {
-  try { localStorage.setItem('inforeal-mode', retro ? 'retro' : 'modern'); } catch { /* sem armazenamento */ }
+function setMode(mode) {
+  try { localStorage.setItem('inforeal-mode', mode); } catch { /* sem armazenamento */ }
   location.reload();
 }
 

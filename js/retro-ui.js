@@ -3,15 +3,13 @@
 // Pacote 3 (parte visual): botão para trocar de era, internet discada e textos da época.
 
 function renderRetro() {
-  $('#mode-card').innerHTML = RETRO
-    ? `<h2>⏳ Você está nos anos 2000</h2>
-      <p class="muted">Monitor de tubo, internet discada e Pentium 4. Este save é separado do jogo normal.</p>
-      <button class="btn" data-action="set-mode" data-mode="modern">🚀 Voltar para os dias de hoje</button>`
-    : `<h2>⏳ Modo anos 2000</h2>
-      <p class="muted">Comece de novo em 2004: gabinete bege, monitor de tubo, internet discada e Contra-Ataque 1.6.
-      O seu save atual fica guardado e você pode voltar quando quiser.</p>
-      <button class="btn" data-action="set-mode" data-mode="retro">📼 Viajar para os anos 2000</button>`;
-  document.querySelector('.logo').innerHTML = RETRO ? '🖥️ Info<span>real</span> <small>2000</small>' : '🖥️ Info<span>real</span>';
+  const eras = { modern: '🚀 Dias de hoje', retro: '📼 Anos 2000', future: '🤖 Ano 2077' };
+  $('#mode-card').innerHTML = `<h2>⏳ Viajar no tempo</h2>
+    <p class="muted">Cada era tem um save separado. Você está em: <b>${eras[GAME_MODE]}</b>.</p>
+    <p class="muted">📼 2004: gabinete bege, monitor de tubo e internet discada. 🤖 2077: implante neural, placa quântica e hologramas.</p>
+    <div class="chips">${Object.entries(eras).filter(([m]) => m !== GAME_MODE)
+      .map(([m, label]) => `<button class="btn small" data-action="set-mode" data-mode="${m}">${label}</button>`).join('')}</div>`;
+  document.querySelector('.logo').innerHTML = `🖥️ Info<span>real</span>${RETRO ? ' <small>2000</small>' : FUTURE ? ' <small>2077</small>' : ''}`;
   document.querySelectorAll('.os-icon[data-app=stream], .task-btn[data-app=stream]').forEach(b => {
     b.title = RETRO ? 'JustinTV' : 'StreamZinho';
   });
@@ -29,8 +27,7 @@ Hooks.on('liveStart', () => {
 
 Hooks.on('action', d => {
   if (d.action !== 'set-mode' || busy()) return;
-  const retro = d.mode === 'retro';
-  if (confirm(retro ? 'Viajar para os anos 2000? Seu save atual fica guardado.' : 'Voltar para os dias de hoje? O save dos anos 2000 fica guardado.')) setMode(retro);
+  if (confirm('Viajar no tempo? O save desta era fica guardado e você pode voltar quando quiser.')) setMode(d.mode);
 });
 
 render();

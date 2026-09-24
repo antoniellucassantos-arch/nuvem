@@ -299,6 +299,7 @@ function releaseProject(P, priceId) {
     score: q.score, price: priceId, day: S.day, ai: !!P.ai,
     sold: 0, revenue: 0, lastSales: 0, hype: 0.5,
   };
+  Hooks.run('released', game, P);
   // Primeiro dia: pico de lançamento.
   const units = salesFor(game) * 2;
   const revenue = applySales(game, units);

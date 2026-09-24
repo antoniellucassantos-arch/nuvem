@@ -36,6 +36,7 @@
   </nav>
 
   <main>
+    <div class="card hack-card" id="hack-card" hidden></div>
     <div class="tutorial" id="tutorial" hidden role="dialog" aria-live="polite">
       <div class="muted" id="tut-step"></div>
       <p id="tut-text"></p>
@@ -232,6 +233,7 @@
           <button class="btn ghost" data-action="stop-dev">Parar (a energia que sobrar volta)</button>
         </div>
 
+        <div class="card" id="franchise-card" hidden></div>
         <div class="card">
           <h2>Seus jogos</h2>
           <div id="my-games"></div>
@@ -297,6 +299,7 @@
 
     <section id="tab-goals" hidden>
       <div class="card" id="missions-card"></div>
+      <div class="card" id="doc-card"></div>
       <div class="grid-2">
         <div class="card">
           <h2>Objetivos</h2>
@@ -333,12 +336,15 @@
     </section>
   </main>
 
+  <div class="doc-player" id="doc-player" hidden></div>
+
   <div id="toasts"></div>
 
   <script src="js/core.js"></script>
   <script src="js/data.js"></script>
   <script src="js/releases.js"></script>
   <script src="js/retro.js"></script>
+  <script src="js/future.js"></script>
   <script src="js/dev-data.js"></script>
   <script src="js/dev.js"></script>
   <script src="js/lab-data.js"></script>
@@ -357,5 +363,8 @@
   <script src="js/missions.js"></script>
   <script src="js/seasons.js"></script>
   <script src="js/skills.js"></script>
+  <script src="js/franchise.js"></script>
+  <script src="js/hackers.js"></script>
+  <script src="js/documentary.js"></script>
 </body>
 </html>
