@@ -173,7 +173,7 @@ Hooks.on('render', renderBatch2);
 Hooks.on('gearMult', v => v * petStage().bonus);
 Hooks.on('daily', () => {
   storeDaily();
-  if (!S.pendingChoice && S.stats.lives > 3 && Math.random() < 0.2) S.pendingChoice = pick(CHOICES).id;
+  if (!S.pendingChoice && S.stats.lives > 3 && Math.random() < 0.2) S.pendingChoice = pick(CHOICES.filter(c => !c.at)).id;
 });
 Hooks.on('petFed', () => {
   const before = PET_STAGES.filter(s => (S.counts.pet - 1) >= s.feeds).pop();

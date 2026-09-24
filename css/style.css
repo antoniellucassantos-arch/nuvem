@@ -712,3 +712,14 @@ html.light body { background: var(--bg); }
 html.light .topbar { background: var(--panel); }
 html.light .toast { background: var(--panel); }
 html.light .terminal, html.light #editor-code, html.light .code-preview { color: #0b6b3a; background: #f7f8fb; }
+
+/* Lote 6 */
+.float-emoji { position: absolute; bottom: 10%; font-size: 22px; pointer-events: none; animation: floatUp 2.2s ease-out forwards; z-index: 5; }
+@keyframes floatUp { to { transform: translateY(-180px); opacity: 0; } }
+.live-cam.react-bad { animation: shake .4s 2; }
+.live-cam.react-good { animation: pop .5s 2; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@keyframes pop { 50% { transform: scale(1.2); } }
+.room-svg { width: 100%; max-width: 360px; display: block; margin: 0 auto; border-radius: 10px; }
+#profile-canvas { width: 100%; max-width: 400px; border-radius: 10px; display: block; margin: 8px 0; }
+.code-box { font-family: monospace; word-break: break-all; }

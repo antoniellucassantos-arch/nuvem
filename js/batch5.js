@@ -88,6 +88,8 @@ CHOICES.push(...RIVAL_STORY);
 Hooks.on('daily', () => {
   S.rivalSeen = S.rivalSeen || [];
   const next = RIVAL_STORY.find(c => S.followers >= c.at && !S.rivalSeen.includes(c.id));
+  // Nos testes automáticos só aparece se pedirem (senão a janela trava os testes antigos).
+  if (navigator.webdriver && !window.TEST_RIVAL) return;
   if (next && !S.pendingChoice) { S.rivalSeen.push(next.id); S.pendingChoice = next.id; }
 });
 

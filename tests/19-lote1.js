@@ -19,7 +19,7 @@ const { chromium } = require('playwright');
   // chefão
   await p.evaluate(() => { S.money = 5000; buyPart('p2'); installPart(S.inventory[S.inventory.length - 1].uid); S.pcOn = true; S.energy = 100; selectedGame = 'fogo'; openApp = 'stream'; render(); startLive(); });
   await p.waitForTimeout(800);
-  await p.evaluate(() => { const ev = LIVE_EVENTS[LIVE_EVENTS.length - 1]; ev.run(live); sim.manual = true; sim.score = live.boss.target + 1; });
+  await p.evaluate(() => { const ev = LIVE_EVENTS.find(e => /boss/.test(e.run.toString())); ev.run(live); sim.manual = true; sim.score = live.boss.target + 1; });
   const f0 = await p.evaluate(() => S.followers);
   await p.evaluate(() => endLive('stopped'));
   console.log('venceu chefão:', await p.evaluate(() => S.followers) > f0);
