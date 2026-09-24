@@ -654,3 +654,9 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 
 /* Configurações: sem animações */
 .no-anim *, .no-anim *::before, .no-anim *::after { animation: none !important; transition: none !important; }
+
+/* Temporadas */
+[data-season="natal"] .os { background: radial-gradient(circle at 70% 30%, #14532d, #0b0d14 70%); }
+[data-season="natal"] .os::before { content: "❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️"; position: absolute; inset: 0 0 auto; text-align: center; opacity: .5; letter-spacing: 30px; }
+[data-season="carnaval"] .os { background: linear-gradient(135deg, #7e22ce, #db2777, #facc15); }
+[data-season="blackfriday"] .os { background: #050505; }

@@ -65,7 +65,7 @@ for (const r of RELEASES) {
   if (r.game) GAMES.push({ ...r.game, day: r.day });
 }
 
-const isReleased = x => !x.day || S.day >= x.day;
+const isReleased = x => (!x.day || S.day >= x.day) && (!x.season || (typeof currentSeason === 'function' && currentSeason() && currentSeason().id === x.season));
 const isNew = x => x.day && S.day >= x.day && S.day - x.day < 7;
 
 // Jogo recém-lançado chega com hype; com o tempo, todo jogo vai ficando velho.
