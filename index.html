@@ -133,6 +133,7 @@
                 </div>
                 <div class="win-body" id="live-setup">
                   <p class="market-banner card" id="poll-note" hidden></p>
+                  <div class="chips" id="inside-toggle"></div>
                   <h3>Escolha o jogo</h3>
                   <div class="games-grid" id="games"></div>
                   <div class="live-controls">
@@ -305,6 +306,7 @@
         <div class="card" id="skills-card"></div>
         <div class="card" id="room-card"></div>
         <div class="card" id="profile-card"></div>
+        <div class="card" id="president-card"></div>
       </div>
 
       <div class="subtab" data-sub="negocios" hidden>
@@ -312,6 +314,7 @@
         <div class="card" id="store-card"></div>
         <div class="card" id="stocks-card"></div>
         <div class="card" id="hw-card"></div>
+        <div class="card" id="gstore-card"></div>
         <div class="card"><h2>🎨 Skins nos seus jogos</h2><div id="skins-list"></div></div>
       </div>
 
@@ -412,6 +415,7 @@
   <script src="js/batch4.js"></script>
   <script src="js/batch5.js"></script>
   <script src="js/batch6.js"></script>
+  <script src="js/batch7.js"></script>
   <script>
     // App instalável e offline (só funciona publicado em https, como no GitHub Pages).
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js');
