@@ -1,0 +1,10 @@
+{
+  "name": "Inforeal",
+  "short_name": "Inforeal",
+  "description": "Monte seu PC, faça lives, crie jogos, sua linguagem e sua própria IA.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0e1016",
+  "theme_color": "#7c5cff",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

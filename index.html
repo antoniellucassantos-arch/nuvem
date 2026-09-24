@@ -6,6 +6,9 @@
   <title>Inforeal</title>
   <meta name="description" content="Monte seu PC, faça lives e fique famoso.">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg">
+  <meta name="theme-color" content="#7c5cff">
 </head>
 <body>
   <header class="topbar">
@@ -294,6 +297,7 @@
         <div class="card" id="collab-card"></div>
       </div>
       <div class="card" id="skills-card"></div>
+      <div class="card" id="stocks-card"></div>
       <div class="card"><h2>🎨 Skins nos seus jogos</h2><div id="skins-list"></div></div>
     </section>
 
@@ -338,6 +342,8 @@
 
   <div class="doc-player" id="doc-player" hidden></div>
 
+  <div class="title-screen" id="title-screen" hidden></div>
+
   <div id="toasts"></div>
 
   <script src="js/core.js"></script>
@@ -366,5 +372,11 @@
   <script src="js/franchise.js"></script>
   <script src="js/hackers.js"></script>
   <script src="js/documentary.js"></script>
+  <script src="js/rescue.js"></script>
+  <script src="js/batch1.js"></script>
+  <script>
+    // App instalável e offline (só funciona publicado em https, como no GitHub Pages).
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js');
+  </script>
 </body>
 </html>
