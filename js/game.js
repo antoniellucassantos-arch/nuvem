@@ -44,6 +44,7 @@ function newState() {
     pcOn: false,
     lastLive: null,
     newsSeen: 0,
+    oc: 0, virus: false, pet: { food: 80 }, house: 'h0', used: [],
     stats: { lives: 0, earned: 0, bestViewers: 0, cyber60: false },
     // Fase 2
     phase2: false,
@@ -129,8 +130,8 @@ function checkBuild() {
     errors,
     parts: p,
     watts,
-    cpu: p.cpu ? p.cpu.score : 0,
-    gpu: p.gpu ? p.gpu.score : 0,
+    cpu: p.cpu ? Math.round(p.cpu.score * ocMult()) : 0,
+    gpu: p.gpu ? Math.round(p.gpu.score * ocMult()) : 0,
     ram: p.ram ? p.ram.gb : 0,
     storage: p.storage ? p.storage.speed : 0,
   };
@@ -142,6 +143,14 @@ function buyPart(id) {
   if (p.cat === 'gear') {
     if (S.gear.includes(id)) return;
     S.gear.push(id);
+    if (id === 'e13' && S.virus) {
+      S.virus = false;
+      toast('🛡️ Antivírus instalado: o vírus foi removido!', 'goal');
+    }
+  } else if (p.cat === 'house') {
+    if (houseTier(id) <= houseTier(S.house)) return;
+    S.house = id;
+    S.energy = Math.min(maxEnergy(), S.energy + 10);
   } else if (p.cat === 'server') {
     if (!serverCanBuy(p)) return;
     serverInstall(p);
@@ -239,6 +248,7 @@ function powerOn() {
 function estimateFps(game, b) {
   let r = Math.min(b.cpu / game.cpu, b.gpu / game.gpu);
   if (b.ram < game.ram) r *= 0.5;
+  if (S.virus) r *= 0.7;
   return Math.max(1, Math.min(240, Math.round(60 * r)));
 }
 
@@ -256,7 +266,7 @@ function novelty(gameId) {
 
 function gearMult() {
   const caseMult = (PART_BY_ID[S.caseId] || PART_BY_ID.k1).mult;
-  return S.gear.reduce((m, id) => m * PART_BY_ID[id].mult, caseMult);
+  return S.gear.reduce((m, id) => m * PART_BY_ID[id].mult, caseMult) * petMult();
 }
 
 /* ---------- Live ---------- */
@@ -371,8 +381,15 @@ function liveTick() {
     endLive('psu');
     return;
   }
-  if (liveEvent(L) === 'blackout') {
-    endLive('blackout');
+  const burned = ocBurn(checkBuild());
+  if (burned) {
+    addChat('Sistema', burned, 'sys');
+    endLive('oc');
+    return;
+  }
+  const ending = liveEvent(L);
+  if (ending) {
+    endLive(ending);
     return;
   }
 
@@ -397,7 +414,7 @@ function endLive(reason) {
   if (L.game.id === 'cyber' && L.fps >= 60) S.stats.cyber60 = true;
   if (L.game.own) streamedOwnGame(L.game.gameId, L.peak);
 
-  if (reason === 'blackout') S.pcOn = false;
+  if (reason === 'blackout' || reason === 'mae') S.pcOn = false;
 
   S.lastLive = {
     game: `${L.game.emoji} ${L.game.name}`,
@@ -439,12 +456,13 @@ function sleep() {
   if (busy()) return;
   const yesterday = S.day;
   S.day++;
-  S.energy = 100;
+  S.energy = maxEnergy();
   for (const id in S.gamePlays) S.gamePlays[id] = Math.floor(S.gamePlays[id] / 2);
   toast(`😴 Você dormiu. Bom dia, dia ${S.day}!`);
   dailySales();
   labDaily();
   dailyEvent();
+  extrasDaily();
   announceReleases(yesterday, S.day);
   changed();
 }
@@ -485,6 +503,7 @@ function partSpec(p) {
     case 'gpu': return `Força ${p.score} · ${p.watts}W`;
     case 'storage': return `${{ hdd: 'HD', ssd: 'SSD SATA', nvme: 'SSD NVMe' }[p.kind]} · Velocidade ${'★'.repeat(p.speed)}${'☆'.repeat(3 - p.speed)}`;
     case 'psu': return `${p.watts}W${p.generic ? ' · ⚠️ genérica, pode explodir' : ''}`;
+    case 'house': return p.desc;
     case 'gear': return p.desc || `+${Math.round((p.mult - 1) * 100)}% espectadores`;
     case 'server': return p.kind === 'gpu' ? `Poder de IA ${p.compute} · ${p.watts}W` : p.kind === 'rack' ? 'Obrigatório: onde tudo é instalado' : 'Obrigatório: o cérebro do servidor';
     case 'case': return `${p.look.fans} ventoinha${p.look.fans > 1 ? 's' : ''}${p.look.rgb ? ' RGB' : ''}`
@@ -508,7 +527,7 @@ function renderHeader() {
   $('#stat-followers').textContent = num(S.followers);
   $('#stat-day').textContent = S.day;
   $('#stat-energy').textContent = S.energy;
-  $('#energy-fill').style.width = S.energy + '%';
+  $('#energy-fill').style.width = Math.min(100, S.energy / maxEnergy() * 100) + '%';
   $('#btn-sleep').disabled = busy();
 }
 
@@ -518,6 +537,9 @@ function renderBuild() {
 
   $('#welcome').hidden = S.stats.lives > 0 || S.pcOn;
   renderCase(b);
+  $('#oc').value = S.oc;
+  $('#oc').disabled = busy();
+  $('#oc-value').textContent = S.oc ? `+${S.oc}%` : 'desligado';
 
   $('#slots').innerHTML = SLOTS.map(slot => {
     const p = b.parts[slot];
@@ -573,6 +595,21 @@ function renderShop() {
     `<button class="chip-btn ${cat === shopFilter ? 'active' : ''}" data-action="filter" data-cat="${cat}">${CAT_ICONS[cat]} ${CATS[cat]}</button>`,
   ).join('');
 
+  if (shopFilter === 'used') {
+    if (!S.used.length) refreshUsed();
+    $('#shop-list').innerHTML = S.used.map((u, i) => {
+      const p = PART_BY_ID[u.id];
+      return `<div class="card shop-item">
+        ${partThumb(p)}
+        <div class="slot-name">${p.name} <span class="chip mini">Usado</span></div>
+        <div class="muted">${partSpec(p)}</div>
+        <div class="muted">Vendedor: ${u.seller}</div>
+        <div class="price">${money(u.price)} <s class="muted">${money(priceOf(p))}</s></div>
+        <button class="btn small" data-action="buy-used" data-i="${i}" ${busy() || S.money < u.price ? 'disabled' : ''}>Arriscar</button>
+      </div>`;
+    }).join('') + '<p class="muted">⚠️ Usados são baratos, mas às vezes o vendedor manda um tijolo na caixa. Novas ofertas todo dia.</p>';
+    return;
+  }
   $('#shop-list').innerHTML = PARTS.filter(p => p.cat === shopFilter && isReleased(p))
     .sort((a, b) => (b.day || 0) - (a.day || 0) || 0).map(p => {
     const locked = S.followers < p.unlock;
@@ -580,7 +617,9 @@ function renderShop() {
     const count = S.inventory.filter(i => i.id === p.id).length;
     let btn;
     if (locked) btn = `<button class="btn small" disabled>🔒 ${num(p.unlock)} seguidores</button>`;
-    else if (p.cat === 'server') {
+    else if (p.cat === 'house' && houseTier(p.id) <= houseTier(S.house)) {
+      btn = `<button class="btn small" disabled>${p.id === S.house ? '✔ Você mora aqui' : 'Você já mora melhor'}</button>`;
+    } else if (p.cat === 'server') {
       const why = serverBlock(p);
       btn = why ? `<button class="btn small" disabled>${why}</button>`
         : `<button class="btn small" data-action="buy" data-id="${p.id}" ${busy() || S.money < priceOf(p) ? 'disabled' : ''}>Comprar</button>`;
@@ -634,7 +673,8 @@ function renderLive() {
       ${ready ? `<div class="badge ${q.cls}">${fps} FPS · ${q.label}</div>` : ''}
       <div class="muted">Popularidade ${'★'.repeat(Math.round(g.pop))} · Interesse ${nov}%</div>
       ${freshnessLabel(g) ? `<div class="muted">${freshnessLabel(g)}${g.studio ? ` · ${g.studio}` : ''}</div>` : ''}
-      ${owned ? '' : `<button class="btn small" data-action="buy-game" data-id="${g.id}" ${S.money < g.price ? 'disabled' : ''}>Comprar ${money(g.price)}</button>`}
+      ${owned ? '' : `<button class="btn small" data-action="buy-game" data-id="${g.id}" ${S.money < g.price ? 'disabled' : ''}>Comprar ${money(g.price)}</button>
+        ${g.price ? `<button class="btn small ghost" data-action="pirate" data-id="${g.id}" title="Pode vir com vírus!">🏴‍☠️ Baixar pirata</button>` : ''}`}
     </div>`;
   }).join('');
 
@@ -647,7 +687,7 @@ function renderLive() {
   const last = S.lastLive;
   $('#last-live').hidden = !last;
   if (last) {
-    const why = { psu: ' (a fonte explodiu 💥)', stopped: ' (encerrada antes)', blackout: ' (a luz caiu ⚡)' }[last.reason] || '';
+    const why = { psu: ' (a fonte explodiu 💥)', stopped: ' (encerrada antes)', blackout: ' (a luz caiu ⚡)', mae: ' (a mãe desligou 👩)', oc: ' (queimou no overclock 🔥)' }[last.reason] || '';
     $('#last-live').innerHTML = `<h3>Resumo da última live${why}</h3>
       <div class="summary">
         <div><span class="muted">Jogo</span><b>${esc(last.game)}</b></div>
@@ -694,7 +734,11 @@ function renderNews() {
 function renderDesk(b) {
   const has = id => S.gear.includes(id);
   const monitor = has('e11') ? 'ultra' : has('e10') ? 'big' : 'basic';
-  $('#desk').className = `desk monitor-${monitor}${has('e6') ? ' greenscreen' : ''}`;
+  $('#desk').className = `desk monitor-${monitor} house-${S.house}${has('e6') ? ' greenscreen' : ''}`;
+  $('#virus-popup').hidden = !S.virus;
+  $('#pet-food').style.width = S.pet.food + '%';
+  $('#pet').classList.toggle('hungry', S.pet.food < 15);
+  $('#pet').title = S.pet.food < 15 ? 'Estou com fome! (R$ 10)' : 'Alimentar (R$ 10)';
   $('#desk-ring').hidden = !has('e3');
   $('#desk-cam').hidden = !has('e2');
   $('#desk-chair').hidden = !has('e5');
@@ -743,6 +787,9 @@ document.addEventListener('click', e => {
     case 'remove': return removePart(d.slot);
     case 'filter': shopFilter = d.cat; return renderShop();
     case 'use-case': return useCase(d.id);
+    case 'pirate': return pirateGame(d.id);
+    case 'buy-used': return buyUsed(Number(d.i));
+    case 'feed-pet': return feedPet();
     case 'open-app':
       openApp = d.app || 'stream';
       if (openApp === 'news') { S.newsSeen = S.day; saveGame(); }

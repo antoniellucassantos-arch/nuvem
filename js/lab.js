@@ -299,6 +299,11 @@ function labTick() {
     lab.lines.push(psuBoom());
     return endLab();
   }
+  const burned = lab.kind !== 'gen' && ocBurn(b);
+  if (burned) {
+    lab.lines.push(burned);
+    return endLab();
+  }
 
   if (lab.kind === 'ai' || lab.kind === 'brain') {
     const isAi = lab.kind === 'ai';

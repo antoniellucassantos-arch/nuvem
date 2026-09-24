@@ -9,11 +9,13 @@ const CATS = {
   psu: 'Fonte',
   case: 'Gabinete',
   gear: 'Equipamento de live',
+  house: 'Casa',
+  used: 'Usados',
   server: 'Servidor de IA',
 };
 
 const CAT_ICONS = {
-  cpu: '🧠', mobo: '🟩', ram: '📏', gpu: '🎮', storage: '💾', psu: '🔌', case: '🗄️', gear: '🎙️', server: '🏢',
+  cpu: '🧠', mobo: '🟩', ram: '📏', gpu: '🎮', storage: '💾', psu: '🔌', case: '🗄️', gear: '🎙️', server: '🏢', house: '🏠', used: '📦',
 };
 
 // Encaixes do gabinete, na ordem em que aparecem na montagem.
@@ -85,7 +87,16 @@ const PARTS = [
   { id: 'e8', cat: 'gear', name: 'Nobreak APC 1500VA', price: 900, unlock: 50, mult: 1, desc: 'Segura a live quando a luz cai' },
   { id: 'e9', cat: 'gear', name: 'Roteador TP-Link Wi-Fi 6', price: 450, unlock: 50, mult: 1.02, desc: 'A internet não oscila mais' },
   { id: 'e10', cat: 'gear', name: 'Monitor LG UltraGear 27" 144Hz', price: 1600, unlock: 300, mult: 1.04, monitor: 'big' },
+  { id: 'e12', cat: 'gear', name: 'Pasta térmica Arctic MX-6', price: 60, unlock: 0, mult: 1, desc: 'Metade do risco de queimar no overclock' },
+  { id: 'e13', cat: 'gear', name: 'Antivírus', price: 200, unlock: 0, mult: 1, desc: 'Remove e bloqueia vírus de jogo pirata' },
   { id: 'e11', cat: 'gear', name: 'Monitor Samsung Odyssey G9 49" Ultrawide', price: 7000, unlock: 3000, mult: 1.08, monitor: 'ultra' },
+
+  // Casas (compra única; cada uma dá +10 de energia máxima)
+  { id: 'h0', cat: 'house', name: 'Quarto na casa da mãe', price: 0, unlock: 0, desc: 'A mãe manda desligar o PC de noite' },
+  { id: 'h1', cat: 'house', name: 'Kitnet', price: 20000, unlock: 0, desc: '+10 de energia · sem mãe mandando desligar' },
+  { id: 'h2', cat: 'house', name: 'Apartamento com vista', price: 150000, unlock: 0, desc: '+20 de energia' },
+  { id: 'h3', cat: 'house', name: 'Mansão gamer', price: 2000000, unlock: 0, desc: '+30 de energia' },
+  { id: 'h4', cat: 'house', name: 'Prédio da sua empresa', price: 20000000, unlock: 0, desc: '+40 de energia' },
 
   // Servidor de IA (Fase 3 em diante): as super peças para criar sua própria IA
   { id: 'sv0', cat: 'server', kind: 'rack', name: 'Rack 42U com refrigeração líquida', price: 80000, unlock: 0 },

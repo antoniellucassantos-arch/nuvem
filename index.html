@@ -51,6 +51,9 @@
           <svg id="case" class="case" viewBox="0 0 420 460" role="img" aria-label="Gabinete com as peças instaladas"></svg>
           <p class="muted center">Clique num espaço vazio para comprar a peça.</p>
           <div class="specs" id="specs"></div>
+          <label class="oc"><span>🔥 Overclock: <b id="oc-value"></b></span>
+            <input type="range" id="oc" min="0" max="30" step="5">
+            <small class="muted">Mais FPS, mas pode queimar a CPU ou a placa de vídeo. Cooler melhor e pasta térmica diminuem o risco.</small></label>
           <button class="btn big" id="btn-power" data-action="power">⏻ Ligar PC</button>
           <pre class="terminal" id="post" hidden></pre>
         </div>
@@ -101,6 +104,9 @@
                 <button class="os-icon" data-action="goto" data-tab="shop"><span>🛒</span>Loja</button>
                 <button class="os-icon" data-action="goto" data-tab="goals"><span>🏆</span>Objetivos</button>
               </div>
+              <button class="pet" id="pet" data-action="feed-pet"><span>🦫</span><i class="pet-bar"><i id="pet-food"></i></i></button>
+              <div class="virus-popup" id="virus-popup" hidden>⚠️ PARABÉNS, VOCÊ GANHOU UM IPHONE!!!<br>
+                <small>(É vírus. Seu PC está minerando Capicoin escondido. Compre um antivírus na Loja.)</small></div>
               <div class="os-hint" id="os-hint">👈 Clique no <b>StreamZinho</b> para abrir uma live</div>
 
               <div class="window" id="win-stream" hidden>
@@ -297,6 +303,7 @@
   <script src="js/draw.js"></script>
   <script src="js/sim.js"></script>
   <script src="js/events.js"></script>
+  <script src="js/extras.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

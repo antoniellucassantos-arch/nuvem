@@ -564,3 +564,30 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 .task-apps { display: flex; align-items: center; gap: 6px; }
 .task-btn { background: rgba(255, 255, 255, .08); border: 0; border-radius: 6px; padding: 2px 8px; font-size: 1rem; cursor: pointer; }
 .task-btn:hover { background: rgba(255, 255, 255, .2); }
+
+/* Extras: casa, pet, vírus, overclock */
+.desk.house-h1 .wall { background: linear-gradient(#2a2a2e, #1c1c20); }
+.desk.house-h2 .wall { background: linear-gradient(180deg, #0b1a36 0 55%, #1d2130 55%); }
+.desk.house-h2 .wall::before { content: "🌃"; position: absolute; right: 22%; top: 8%; font-size: 3rem; opacity: .8; }
+.desk.house-h3 .wall { background: linear-gradient(#3b2a12, #1f1608); }
+.desk.house-h3 .wall::before { content: "🖼️ 🏆 🖼️"; position: absolute; left: 30%; top: 4%; font-size: 1.6rem; }
+.desk.house-h4 .wall { background: linear-gradient(135deg, #0f172a, #1e293b); }
+.desk.house-h4 .wall::before { content: "🏢 INFOREAL S.A."; position: absolute; left: 35%; top: 4%; font-weight: 800; letter-spacing: 2px; color: #94a3b8; }
+.desk.greenscreen .wall::before { content: none; }
+.pet {
+  position: absolute; right: 16px; bottom: 44px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: 0; cursor: pointer; font-size: 2.4rem; animation: bob 2s ease-in-out infinite;
+}
+.pet.hungry { filter: grayscale(.8); animation: none; }
+.pet-bar { display: block; width: 48px; height: 5px; background: rgba(0, 0, 0, .5); border-radius: 3px; overflow: hidden; }
+.pet-bar i { display: block; height: 100%; background: var(--good); }
+@keyframes bob { 50% { transform: translateY(-4px); } }
+.virus-popup {
+  position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%) rotate(-3deg); z-index: 3; pointer-events: none;
+  background: #ffef00; color: #c00; font-weight: 900; padding: 12px 16px; border: 4px dashed #c00; text-align: center;
+  animation: pulse .8s infinite;
+}
+.virus-popup small { color: #111; font-weight: 600; }
+.oc { display: grid; gap: 4px; margin-top: 12px; }
+.oc input { width: 100%; accent-color: var(--bad); }
+@media (prefers-reduced-motion: reduce) { .pet, .virus-popup { animation: none; } }

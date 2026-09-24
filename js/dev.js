@@ -151,6 +151,11 @@ function devTick() {
     devLog(psuBoom(), 'bug');
     return endDevSession();
   }
+  const burned = ocBurn(b);
+  if (burned) {
+    devLog(burned, 'bug');
+    return endDevSession();
+  }
 
   if (dev.mode === 'dev') {
     const pts = speed * 1.5;
