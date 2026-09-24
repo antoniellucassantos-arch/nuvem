@@ -52,7 +52,7 @@ const GENRE_COLORS = {
 };
 
 // Como os seus jogos aparecem na simulação da live.
-const GENRE_SIM = { plataforma: 'runner', puzzle: 'runner', corrida: 'racer', rpg: 'runner', simulacao: 'runner', tiro: 'shooter', terror: 'runner' };
+const GENRE_SIM = { plataforma: 'runner', puzzle: 'puzzle', corrida: 'kart', rpg: 'rpg', simulacao: 'soccer', tiro: 'shooter', terror: 'runner' };
 const THEME_SPRITES = {
   espaco: ['🚀', '☄️'], zumbis: ['🧑', '🧟'], fazenda: ['👩‍🌾', '🐔'], medieval: ['🤺', '🐉'], escola: ['🧒', '📚'],
   capivaras: ['🦫', '🐊'], futebol: ['🏃', '⚽'], ninjas: ['🥷', '🗡️'], dinossauros: ['🦕', '🦖'], cyberpunk: ['🦾', '🤖'],

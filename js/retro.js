@@ -58,13 +58,13 @@ if (RETRO) {
 
   const retroGames = [
     { id: 'paciencia', sim: 'runner', hero: '🃏', foe: '♠️', colors: ['#0b5d1e', '#3aa655'], emoji: '🃏', name: 'Paciência do Windows XP', price: 0, cpu: 1, gpu: 1, ram: 0.125, pop: 0.6 },
-    { id: 'fogo', sim: 'shooter', hero: '💣', foe: '💣', colors: ['#6b7280', '#d1d5db'], emoji: '💣', name: 'Campo Minado Turbo', price: 0, cpu: 1, gpu: 1, ram: 0.125, pop: 0.8 },
-    { id: 'moba', sim: 'shooter', hero: '🧙', foe: '👹', colors: ['#1a237e', '#7c4dff'], emoji: '🧙', name: 'DotZ (mapa de Guerracraft)', price: 0, cpu: 4, gpu: 3, ram: 0.25, pop: 1.3 },
+    { id: 'fogo', sim: 'puzzle', hero: '💣', foe: '💣', colors: ['#6b7280', '#d1d5db'], emoji: '💣', name: 'Campo Minado Turbo', price: 0, cpu: 1, gpu: 1, ram: 0.125, pop: 0.8 },
+    { id: 'moba', sim: 'rpg', hero: '🧙', foe: '👹', colors: ['#1a237e', '#7c4dff'], emoji: '🧙', name: 'DotZ (mapa de Guerracraft)', price: 0, cpu: 4, gpu: 3, ram: 0.25, pop: 1.3 },
     { id: 'cs', sim: 'shooter', hero: '🔫', foe: '🥷', colors: ['#3e2723', '#c49a45'], emoji: '🔫', name: 'Contra-Ataque 1.6', price: 0, cpu: 5, gpu: 4, ram: 0.25, pop: 1.6 },
     { id: 'blocks', sim: 'runner', hero: '🧝', foe: '🐉', colors: ['#1f3a1a', '#9ccc65'], emoji: '🗡️', name: 'Tíbio Online', price: 30, cpu: 3, gpu: 2, ram: 0.25, pop: 1.4 },
     { id: 'gta', sim: 'racer', hero: '🚗', foe: '🚓', colors: ['#3b2a12', '#f59e0b'], emoji: '🌴', name: 'GTZ: San Andreias', price: 90, cpu: 7, gpu: 7, ram: 0.5, pop: 2.2 },
     { id: 'cyber', sim: 'racer', hero: '🏎️', foe: '🚙', colors: ['#1e1b4b', '#22d3ee'], emoji: '🏁', name: 'Need for Velocidade Underground', price: 120, cpu: 9, gpu: 10, ram: 0.5, pop: 2.4 },
-    { id: 'simsim', sim: 'runner', hero: '🏠', foe: '🔥', colors: ['#14532d', '#86efac'], emoji: '💎', name: 'The Simz 2', price: 150, cpu: 12, gpu: 12, ram: 1, pop: 2.8 },
+    { id: 'simsim', sim: 'soccer', hero: '🏠', foe: '🔥', colors: ['#14532d', '#86efac'], emoji: '💎', name: 'The Simz 2', price: 150, cpu: 12, gpu: 12, ram: 1, pop: 2.8 },
   ];
   GAMES.splice(0, GAMES.length, ...retroGames);
 

@@ -43,7 +43,7 @@ function updatePlayButton() {
   if (!btn || !sim) return;
   btn.textContent = sim.manual ? '🤖 Voltar pro automático' : '🎮 Jogar eu mesmo';
   $('#sim-hint').textContent = sim.manual
-    ? { runner: 'Espaço, ↑ ou toque para pular', racer: '← → ou toque nos lados para desviar', shooter: 'Clique nos inimigos para atirar' }[sim.mode]
+    ? (SIM_EXTRA[sim.mode] ? SIM_EXTRA[sim.mode].hint : { runner: 'Espaço, ↑ ou toque para pular', racer: '← → ou toque nos lados para desviar', shooter: 'Clique nos inimigos para atirar' }[sim.mode])
     : '';
 }
 
@@ -73,7 +73,8 @@ function simLoop(ts) {
   if (!resizeSim()) return;
   sim.t += dt;
   sim.flash = Math.max(0, sim.flash - dt);
-  ({ runner: updateRunner, racer: updateRacer, shooter: updateShooter })[sim.mode](dt);
+  if (SIM_EXTRA[sim.mode]) SIM_EXTRA[sim.mode].update(dt);
+  else ({ runner: updateRunner, racer: updateRacer, shooter: updateShooter })[sim.mode](dt);
   sim.fx = sim.fx.filter(f => (f.life -= dt) > 0);
   drawSim();
 }
@@ -83,6 +84,7 @@ function initMode() {
   if (sim.mode === 'runner') sim.player = { x: w * 0.18, y: h * 0.8, vy: 0 };
   if (sim.mode === 'racer') sim.player = { lane: 1, x: laneX(1) };
   if (sim.mode === 'shooter') sim.player = { x: w / 2, y: h / 2, cooldown: 0 };
+  if (SIM_EXTRA[sim.mode]) SIM_EXTRA[sim.mode].init();
 }
 
 // Pontos e mortes quando você joga mudam o público da live.
@@ -237,6 +239,8 @@ function drawSim() {
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
+  if (SIM_EXTRA[sim.mode]) SIM_EXTRA[sim.mode].draw(ctx, w, h);
+
   if (sim.mode === 'runner') {
     const ground = h * 0.8;
     ctx.fillStyle = 'rgba(0,0,0,.25)';
@@ -315,6 +319,7 @@ document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT') return;
     e.preventDefault();
     if (!sim.manual) toggleManual();
+    if (SIM_EXTRA[sim.mode]) SIM_EXTRA[sim.mode].key(k);
     if ((k === ' ' || k === 'ArrowUp' || k === 'w') && sim.mode === 'runner') sim.jump = true;
     if ((k === 'ArrowLeft' || k === 'a') && sim.mode === 'racer') sim.player.lane = Math.max(0, sim.player.lane - 1);
     if ((k === 'ArrowRight' || k === 'd') && sim.mode === 'racer') sim.player.lane = Math.min(2, sim.player.lane + 1);
@@ -326,6 +331,7 @@ document.addEventListener('pointerdown', e => {
   if (!sim.manual) toggleManual();
   const r = sim.canvas.getBoundingClientRect();
   const x = e.clientX - r.left, y = e.clientY - r.top;
+  if (SIM_EXTRA[sim.mode]) SIM_EXTRA[sim.mode].tap(x, y, r.width);
   if (sim.mode === 'runner') sim.jump = true;
   if (sim.mode === 'racer') sim.player.lane = Math.max(0, Math.min(2, sim.player.lane + (x < r.width / 2 ? -1 : 1)));
   if (sim.mode === 'shooter' && sim.player.cooldown <= 0) shootAt(x, y);

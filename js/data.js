@@ -116,10 +116,10 @@ const PARTS = [
 
 // cpu/gpu/ram = requisitos para rodar a 60 FPS. pop = popularidade do jogo.
 const GAMES = [
-  { id: 'paciencia', sim: 'runner', hero: '🃏', foe: '♠️', colors: ['#0f5132', '#1b8a5a'], emoji: '🃏', name: 'Paciência Ultra', price: 0, cpu: 5, gpu: 3, ram: 4, pop: 0.5 },
+  { id: 'paciencia', sim: 'puzzle', hero: '🃏', foe: '♠️', colors: ['#0f5132', '#1b8a5a'], emoji: '🃏', name: 'Paciência Ultra', price: 0, cpu: 5, gpu: 3, ram: 4, pop: 0.5 },
   { id: 'fogo', sim: 'shooter', hero: '🔥', foe: '🪖', colors: ['#7a1f00', '#ff7a1a'], emoji: '🔥', name: 'Fogo Livre', price: 0, cpu: 12, gpu: 10, ram: 4, pop: 1.1 },
-  { id: 'blocks', sim: 'runner', hero: '⛏️', foe: '🟩', colors: ['#2d5a27', '#7cb342'], emoji: '⛏️', name: 'Mine Blocks', price: 60, cpu: 10, gpu: 8, ram: 4, pop: 1.0 },
-  { id: 'moba', sim: 'shooter', hero: '🧙', foe: '👹', colors: ['#1a237e', '#7c4dff'], emoji: '🧙', name: 'Liga das Lendas', price: 0, cpu: 15, gpu: 12, ram: 8, pop: 1.3 },
+  { id: 'blocks', sim: 'puzzle', hero: '⛏️', foe: '🟩', colors: ['#2d5a27', '#7cb342'], emoji: '⛏️', name: 'Mine Blocks', price: 60, cpu: 10, gpu: 8, ram: 4, pop: 1.0 },
+  { id: 'moba', sim: 'rpg', hero: '🧙', foe: '👹', colors: ['#1a237e', '#7c4dff'], emoji: '🧙', name: 'Liga das Lendas', price: 0, cpu: 15, gpu: 12, ram: 8, pop: 1.3 },
   { id: 'cs', sim: 'shooter', hero: '🔫', foe: '🥷', colors: ['#3e2723', '#c49a45'], emoji: '🔫', name: 'Contra-Ataque 2', price: 0, cpu: 25, gpu: 25, ram: 8, pop: 1.5 },
   { id: 'gta', sim: 'racer', hero: '🚗', foe: '🚓', colors: ['#0d3b66', '#f95738'], emoji: '🚗', name: 'GTZ: Cidade Grande', price: 120, cpu: 35, gpu: 45, ram: 16, pop: 2.0 },
   { id: 'cyber', sim: 'racer', hero: '🏍️', foe: '🚙', colors: ['#2b0a3d', '#f3e600'], emoji: '🤖', name: 'Cyberfuturo 2099', price: 250, cpu: 60, gpu: 80, ram: 16, pop: 2.6 },

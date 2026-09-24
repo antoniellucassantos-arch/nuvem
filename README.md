@@ -50,6 +50,7 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 - `js/game.js`: lógica do jogo (montagem, loja, lives)
 - `js/draw.js`: desenhos em SVG (gabinete, peças, rack do servidor, miniaturas da loja e capas dos jogos)
 - `js/sim.js`: simulação jogável que aparece no monitor durante a live
+- `js/sim-modes.js`: modos extras da simulação (futebol, kart, quebra-cabeça e batalha de RPG)
 - `js/events.js`: eventos aleatórios (fonte explodindo, raids, queda de luz...)
 - `js/extras.js`: a mãe, usados com golpe, overclock, vírus, capivara pet, casas e IA consciente
 - `js/pack1.js`: exportar/importar save, conquistas secretas, sons, tendências da semana, crise dos chips e personagem

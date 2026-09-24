@@ -333,7 +333,7 @@ function ownGameForLive(g) {
   return {
     id: 'my-' + g.id, gameId: g.id, own: true, name: g.name, price: 0,
     emoji: THEME_BY_ID[g.theme].emoji, emoji2: GENRE_BY_ID[g.genre].emoji, colors: GENRE_COLORS[g.genre],
-    sim: GENRE_SIM[g.genre], hero: GENRE_SIM[g.genre] === 'racer' ? '🏎️' : THEME_SPRITES[g.theme][0], foe: THEME_SPRITES[g.theme][1],
+    sim: g.theme === 'futebol' ? 'soccer' : GENRE_SIM[g.genre], hero: THEME_SPRITES[g.theme][0], foe: THEME_SPRITES[g.theme][1],
     ...e.play, pop: 0.3 + g.score * 0.2,
   };
 }
