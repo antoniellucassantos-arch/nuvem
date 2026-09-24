@@ -640,3 +640,14 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 .retro .win-bar { background: linear-gradient(#0a5ce8, #003dc8); color: #fff; }
 .retro .keyboard { background: repeating-linear-gradient(90deg, #e6dfca 0 14px, #bdb498 14px 16px); box-shadow: 0 0 0 3px #a89f86; }
 .retro .mouse { background: #e6dfca; box-shadow: 0 0 0 2px #a89f86; }
+
+/* Tutorial */
+.tutorial {
+  position: sticky; top: 64px; z-index: 20; margin-bottom: 16px; padding: 12px 16px;
+  background: var(--panel); border: 2px solid var(--accent); border-radius: 12px; box-shadow: 0 12px 40px rgba(0, 0, 0, .6);
+}
+.tutorial p { margin: 6px 0 10px; }
+.tut-target { outline: 3px solid var(--warn) !important; outline-offset: 3px; border-radius: 8px; animation: tut-pulse 1.2s infinite; }
+@keyframes tut-pulse { 50% { outline-color: transparent; } }
+@media (max-width: 720px) { .tutorial { top: 8px; } }
+@media (prefers-reduced-motion: reduce) { .tut-target { animation: none; } }

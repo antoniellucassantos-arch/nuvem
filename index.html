@@ -35,6 +35,12 @@
   </nav>
 
   <main>
+    <div class="tutorial" id="tutorial" hidden role="dialog" aria-live="polite">
+      <div class="muted" id="tut-step"></div>
+      <p id="tut-text"></p>
+      <button class="btn small ghost" data-action="tut-skip">Pular tutorial</button>
+    </div>
+
     <section id="tab-build">
       <div class="card welcome" id="welcome">
         <h2>Bem-vindo ao Inforeal! 👋</h2>
@@ -44,7 +50,6 @@
         <p class="muted">Dica: o processador precisa ter o mesmo soquete da placa-mãe, e a memória precisa ser do tipo que a placa aceita.</p>
       </div>
 
-      <div class="card" id="avatar-card"></div>
       <div class="grid-2">
         <div class="card">
           <div class="card-head">
@@ -74,6 +79,7 @@
           </div>
         </div>
       </div>
+      <div class="card" id="avatar-card"></div>
     </section>
 
     <section id="tab-shop" hidden>
@@ -302,6 +308,7 @@
             <li>✅ Fase 3: IA criadora de jogos (aba IA)</li>
             <li>✅ Fase 4: sua própria linguagem de programação e sua própria IA (aba Lab)</li>
           </ul>
+          <button class="btn ghost small" data-action="tut-restart">📖 Rever tutorial</button>
           <button class="btn ghost small" data-action="reset">Apagar progresso</button>
         </div>
         <div class="card">
@@ -339,5 +346,6 @@
   <script src="js/pack1.js"></script>
   <script src="js/pack2.js"></script>
   <script src="js/retro-ui.js"></script>
+  <script src="js/tutorial.js"></script>
 </body>
 </html>
