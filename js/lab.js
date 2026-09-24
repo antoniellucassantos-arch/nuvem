@@ -284,7 +284,7 @@ function startLab(kind, total, extra = {}) {
   if (kind === 'ai' || kind === 'brain') lab.lines.push(`$ treinar ${(kind === 'ai' ? S.ai : S.brain).name}${(kind === 'ai' ? S.ai : S.brain).cloud ? ' --gpus-na-nuvem' : ''}`);
   render();
   updateLabView();
-  lab.timer = setInterval(labTick, LAB_TICK_MS);
+  lab.timer = setInterval(labTick, LAB_TICK_MS / gameSpeed());
 }
 
 function labPanel() {

@@ -3,10 +3,12 @@ const { chromium } = require('playwright');
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1200, height: 1000 } });
+  await p.addInitScript(() => { window.TEST_CALM = true; });  // sem eventos aleatórios (testados no 06 e 08)
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => m.type()==='error' && errs.push(m.text()));
   p.on('dialog', d => d.accept());
   const url = 'file://' + require('path').resolve(__dirname, '..', 'index.html');
   await p.goto(url);
+  await p.evaluate(() => { S.tutorial = -1; saveGame(); });  // o tutorial tem teste próprio (12)
   // locked state
   await p.click('.tab[data-tab=dev]');
   console.log('locked tab label:', await p.textContent('.tab[data-tab=dev]'), '| locked visible:', await p.isVisible('#dev-locked'));

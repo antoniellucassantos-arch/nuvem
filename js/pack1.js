@@ -29,7 +29,7 @@ function beep(freq, dur, type = 'square', vol = 0.05, slide = 0) {
     osc.type = type;
     osc.frequency.setValueAtTime(freq, t);
     if (slide) osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq + slide), t + dur);
-    gain.gain.setValueAtTime(vol, t);
+    gain.gain.setValueAtTime(vol * volume(), t);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     osc.connect(gain).connect(audioCtx.destination);
     osc.start(t);
@@ -46,7 +46,7 @@ function noise(dur, vol = 0.2) {
     for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
     const src = audioCtx.createBufferSource();
     const gain = audioCtx.createGain();
-    gain.gain.value = vol;
+    gain.gain.value = vol * volume();
     src.buffer = buf;
     src.connect(gain).connect(audioCtx.destination);
     src.start();

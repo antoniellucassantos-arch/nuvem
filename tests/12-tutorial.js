@@ -3,6 +3,7 @@ const { chromium } = require('playwright');
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
+  await p.addInitScript(() => { window.TEST_CALM = true; });  // sem eventos aleatórios (testados no 06 e 08)
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => m.type()==='error' && errs.push(m.text()));
   await p.goto('file://' + require('path').resolve(__dirname, '..', 'index.html'));
   const step = async () => { await p.waitForTimeout(600); return p.evaluate(() => S.tutorial); };

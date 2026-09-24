@@ -8,6 +8,7 @@ const STREAMERS = ['GauleZinho', 'CasimiroFake', 'Alanzoka Cover', 'LoudCoringa 
 
 // Chance de a fonte genérica explodir a cada 10 minutos de uso. Sobrecarregada é bem pior.
 function psuExplodes(b) {
+  if (window.TEST_CALM) return false;   // testes automáticos desligam a sorte
   const psu = b.parts.psu;
   if (!psu || !psu.generic) return false;
   const load = b.watts / psu.watts;
@@ -111,6 +112,7 @@ const LIVE_EVENTS = [
 
 // Roda no máximo um evento por tick. Devolve 'blackout' se a live precisa acabar.
 function liveEvent(L) {
+  if (window.TEST_CALM) return null;
   for (const ev of LIVE_EVENTS) {
     if ((!ev.when || ev.when(L)) && Math.random() < ev.chance) return ev.run(L) || null;
   }

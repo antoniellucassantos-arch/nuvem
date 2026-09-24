@@ -137,7 +137,7 @@ function startDevSession(mode, hours) {
   devLog(mode === 'dev' ? '⌨️ Hora de programar!' : '🔍 Caçando bugs...', 'sys');
   render();
   updateDevView();
-  dev.timer = setInterval(devTick, DEV_TICK_MS);
+  dev.timer = setInterval(devTick, DEV_TICK_MS / gameSpeed());
 }
 
 function devTick() {

@@ -651,3 +651,6 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 @keyframes tut-pulse { 50% { outline-color: transparent; } }
 @media (max-width: 720px) { .tutorial { top: 8px; } }
 @media (prefers-reduced-motion: reduce) { .tut-target { animation: none; } }
+
+/* Configurações: sem animações */
+.no-anim *, .no-anim *::before, .no-anim *::after { animation: none !important; transition: none !important; }

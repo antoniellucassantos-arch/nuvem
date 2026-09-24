@@ -3,9 +3,11 @@ const { chromium } = require('playwright');
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1200, height: 900 } });
+  await p.addInitScript(() => { window.TEST_CALM = true; });  // sem eventos aleatórios (testados no 06 e 08)
   const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('console', m => m.type()==='error' && errs.push(m.text()));
   p.on('dialog', d => d.accept());
   await p.goto('file://' + require('path').resolve(__dirname, '..', 'index.html'));
+  await p.evaluate(() => { S.tutorial = -1; saveGame(); });  // o tutorial tem teste próprio (12)
   await p.click('.tab[data-tab=shop]');
   for (const [cat, id] of [['cpu','c1'],['mobo','m1'],['ram','r1'],['gpu','g1'],['storage','s1'],['psu','p1']]) {
     await p.click(`.chip-btn[data-cat=${cat}]`); await p.click(`[data-action=buy][data-id=${id}]`);

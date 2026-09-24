@@ -47,7 +47,8 @@ function tutorialTick() {
     tutTarget = el;
     if (el) {
       el.classList.add('tut-target');
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const r = el.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > window.innerHeight) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 }

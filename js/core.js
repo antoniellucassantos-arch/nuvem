@@ -16,6 +16,14 @@
 //   gearMult(v)     filtro do bônus de público         bought(peça)
 //   psuBoom, ocBurn, pirated(pegouVirus), usedBrick, petFed
 
+// Configurações do jogador (volume, velocidade, animações). Ficam no save.
+const settings = () => {
+  S.settings = { volume: 70, speed: 1, anim: true, ...(S.settings || {}) };
+  return S.settings;
+};
+const gameSpeed = () => settings().speed;
+const volume = () => settings().volume / 100;
+
 const Hooks = (() => {
   const list = {};
   return {

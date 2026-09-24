@@ -328,7 +328,7 @@ function startLive() {
   render();
   startSim(game, fps);
   updateLiveView();
-  live.timer = setInterval(liveTick, TICK_MS);
+  live.timer = setInterval(liveTick, TICK_MS / gameSpeed());
   Hooks.run('liveStart');
 }
 
