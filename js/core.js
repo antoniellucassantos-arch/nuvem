@@ -17,6 +17,7 @@
 //   psuBoom, ocBurn, pirated(pegouVirus), usedBrick, petFed
 //   installed(peça)   uma peça foi instalada no PC
 //   released(jogo, projeto)   um jogo acabou de ser lançado (antes das vendas do 1º dia)
+//   psuChance(v), criticExpectation(v)
 //   maxEnergy(v), donationChance(v), scamChance(v), virusChance(v)   filtros de números
 
 // Configurações do jogador (volume, velocidade, animações). Ficam no save.

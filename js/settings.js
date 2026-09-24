@@ -12,7 +12,8 @@ function renderSettings() {
     <div class="chips">${[1, 2, 4].map(v => `<button class="chip-btn ${st.speed === v ? 'active' : ''}" data-action="set-speed" data-v="${v}">${v}x</button>`).join('')}</div>
     <p class="muted">Muda só quanto tempo você espera. O resultado das sessões é o mesmo. Vale a partir da próxima sessão.</p>
     <label class="toggle"><input type="checkbox" id="set-anim" ${st.anim ? 'checked' : ''}>
-      <span>✨ Animações (ventoinhas girando, RGB, luzes piscando)</span></label>`;
+      <span>✨ Animações (ventoinhas girando, RGB, luzes piscando)</span></label>
+    <div id="settings-extra"></div>`;
 }
 
 Hooks.on('render', renderSettings);

@@ -244,7 +244,7 @@ function projectQuality(P) {
   const combo = COMBOS[`${P.genre}+${P.theme}`] || 1;
   const penalty = Math.min(0.6, (P.bugs / P.target) * 1.2);
   const raw = skillF * e.mult * combo * (0.55 + 0.45 * fit) * (1 + P.bonus) * (1 - penalty);
-  const expectation = 1.4 * (1 + 0.1 * Math.min(S.myGames.length, 40));
+  const expectation = Hooks.filter('criticExpectation', 1.4 * (1 + 0.1 * Math.min(S.myGames.length, 40)));
   const score = Math.round(Math.min(10, Math.max(1, 10 * raw / expectation)) * 10) / 10;
   return { score, fit, combo, penalty, engine: e, genre: g };
 }

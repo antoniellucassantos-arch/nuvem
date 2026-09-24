@@ -132,6 +132,7 @@
                   <button class="win-close" data-action="close-app" aria-label="Fechar">✕</button>
                 </div>
                 <div class="win-body" id="live-setup">
+                  <p class="market-banner card" id="poll-note" hidden></p>
                   <h3>Escolha o jogo</h3>
                   <div class="games-grid" id="games"></div>
                   <div class="live-controls">
@@ -170,6 +171,7 @@
               <div class="live-title"><span id="live-game"></span> <span class="live-fps" id="live-fps"></span></div>
               <div class="sim-hint" id="sim-hint"></div>
               <div class="event-banner" id="event-banner" hidden></div>
+              <div class="dare-box" id="dare-box" hidden></div>
             </div>
           </div>
           <div class="monitor-neck"></div>
@@ -404,6 +406,7 @@
   <script src="js/batch2.js"></script>
   <script src="js/batch3.js"></script>
   <script src="js/batch4.js"></script>
+  <script src="js/batch5.js"></script>
   <script>
     // App instalável e offline (só funciona publicado em https, como no GitHub Pages).
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js');

@@ -697,3 +697,18 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 .choice-box { background: var(--panel); border: 2px solid var(--accent); border-radius: 14px; padding: 20px; max-width: 460px; text-align: center; }
 .choice-buttons { display: grid; gap: 10px; margin-top: 12px; }
 .subtabs { position: sticky; top: 64px; z-index: 5; background: var(--bg); padding: 6px 0; }
+
+/* Pedidos do chat */
+.dare-box { position: absolute; right: 12px; top: 44px; z-index: 3; max-width: 55%; padding: 10px 12px; border-radius: 10px;
+  background: rgba(10, 12, 18, .92); border: 2px solid var(--good); font-size: .85rem; }
+.dare-box .chips { margin: 8px 0 0; }
+
+/* Tema claro */
+html.light {
+  --bg: #f3f4f8; --panel: #ffffff; --panel-2: #eceef4; --border: #d6d9e3; --text: #1b1e28; --muted: #5d6475;
+  --accent: #6a4df5; --accent-2: #5b3fe0;
+}
+html.light body { background: var(--bg); }
+html.light .topbar { background: var(--panel); }
+html.light .toast { background: var(--panel); }
+html.light .terminal, html.light #editor-code, html.light .code-preview { color: #0b6b3a; background: #f7f8fb; }

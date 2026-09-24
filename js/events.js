@@ -12,7 +12,7 @@ function psuExplodes(b) {
   const psu = b.parts.psu;
   if (!psu || !psu.generic) return false;
   const load = b.watts / psu.watts;
-  return Math.random() < 0.004 + (load > 0.75 ? 0.03 : 0);
+  return Math.random() < Hooks.filter('psuChance', 0.004 + (load > 0.75 ? 0.03 : 0));
 }
 
 // Remove a fonte (e às vezes leva outra peça junto). Devolve a mensagem para mostrar.
