@@ -18,6 +18,7 @@
         ⚡ <b id="stat-energy"></b>
         <div class="bar"><div id="energy-fill"></div></div>
       </div>
+      <button class="btn small ghost" id="btn-sound" data-action="toggle-sound" aria-label="Som">🔊</button>
       <button class="btn small" id="btn-sleep" data-action="sleep">😴 Dormir</button>
     </div>
   </header>
@@ -42,6 +43,7 @@
         <p class="muted">Dica: o processador precisa ter o mesmo soquete da placa-mãe, e a memória precisa ser do tipo que a placa aceita.</p>
       </div>
 
+      <div class="card" id="avatar-card"></div>
       <div class="grid-2">
         <div class="card">
           <div class="card-head">
@@ -74,6 +76,7 @@
     </section>
 
     <section id="tab-shop" hidden>
+      <div class="card market-banner" id="market-banner" hidden></div>
       <div class="chips" id="shop-filters"></div>
       <div class="shop-grid" id="shop-list"></div>
       <p class="muted center">Peças novas aparecem conforme você ganha seguidores. Peças usadas são vendidas pela metade do preço.</p>
@@ -149,7 +152,7 @@
               <canvas id="sim-canvas"></canvas>
               <div class="live-badge">● AO VIVO</div>
               <div class="live-top-viewers">👁 <span id="live-viewers-top">0</span></div>
-              <div class="live-cam" id="live-cam" hidden><span>🧑‍💻</span><span class="mic" id="live-mic">🎙️</span></div>
+              <div class="live-cam" id="live-cam" hidden><span id="live-avatar"></span><span class="mic" id="live-mic">🎙️</span></div>
               <div class="live-title"><span id="live-game"></span> <span class="live-fps" id="live-fps"></span></div>
               <div class="sim-hint" id="sim-hint"></div>
               <div class="event-banner" id="event-banner" hidden></div>
@@ -189,6 +192,7 @@
       </div>
 
       <div id="dev-content" hidden>
+        <div class="card market-banner" id="dev-trend" hidden></div>
         <div class="grid-2">
           <div class="card">
             <h2>Seus conhecimentos</h2>
@@ -288,6 +292,19 @@
           </ul>
           <button class="btn ghost small" data-action="reset">Apagar progresso</button>
         </div>
+        <div class="card">
+          <h2>🏅 Conquistas secretas <span class="muted" id="ach-count"></span></h2>
+          <ul class="goals" id="ach-list"></ul>
+        </div>
+        <div class="card">
+          <h2>💾 Levar o save para outro aparelho</h2>
+          <p class="muted">Exporte aqui, copie o código e cole no outro aparelho (PC ou celular) em Importar.</p>
+          <textarea id="save-code" rows="4" placeholder="O código do save aparece aqui"></textarea>
+          <div class="chips">
+            <button class="btn small" data-action="export-save">📤 Exportar</button>
+            <button class="btn small ghost" data-action="import-save">📥 Importar</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -305,5 +322,6 @@
   <script src="js/events.js"></script>
   <script src="js/extras.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/pack1.js"></script>
 </body>
 </html>
