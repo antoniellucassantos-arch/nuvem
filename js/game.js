@@ -364,7 +364,7 @@ function liveTick() {
   L.followers += newFollowers;
   S.followers += newFollowers;
 
-  if (L.viewers > 0 && Math.random() < Math.min(0.6, 0.05 + L.viewers / 300)) {
+  if (L.viewers > 0 && Math.random() < Hooks.filter('donationChance', Math.min(0.6, 0.05 + L.viewers / 300))) {
     const amount = Math.round(Math.min(500, rand(2, 5 + L.viewers * 0.3)));
     L.earned += amount;
     S.money += amount;

@@ -660,3 +660,4 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 [data-season="natal"] .os::before { content: "❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️"; position: absolute; inset: 0 0 auto; text-align: center; opacity: .5; letter-spacing: 30px; }
 [data-season="carnaval"] .os { background: linear-gradient(135deg, #7e22ce, #db2777, #facc15); }
 [data-season="blackfriday"] .os { background: #050505; }
+.perk-dots { color: var(--warn); letter-spacing: 2px; font-size: .85rem; }

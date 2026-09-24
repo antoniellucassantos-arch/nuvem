@@ -8,7 +8,7 @@ const USED_SELLERS = ['Zé das Peças', 'vendo_tudo_barato', 'Tio do Hardware', 
 
 const HOUSES = ['h0', 'h1', 'h2', 'h3', 'h4'];
 const houseTier = id => HOUSES.indexOf(id || 'h0');
-const maxEnergy = () => 100 + houseTier(S.house) * 10;
+const maxEnergy = () => Hooks.filter('maxEnergy', 100 + houseTier(S.house) * 10);
 
 /* ---------- Overclock ---------- */
 
@@ -37,7 +37,7 @@ function pirateGame(id) {
   const g = gameById(id);
   if (!g || busy() || ownsGame(id)) return;
   S.games.push(id);
-  const infected = !S.gear.includes('e13') && Math.random() < 0.4;
+  const infected = !S.gear.includes('e13') && Math.random() < Hooks.filter('virusChance', 0.4);
   Hooks.run('pirated', infected && !S.virus);
   if (infected) {
     S.virus = true;
@@ -65,7 +65,7 @@ function buyUsed(i) {
   S.used.splice(i, 1);
   const p = PART_BY_ID[u.id];
   const roll = Math.random();
-  if (roll < 0.12) {
+  if (roll < Hooks.filter('scamChance', 0.12)) {
     Hooks.run('usedBrick');
     toast(`🧱 GOLPE! ${u.seller} te mandou um TIJOLO na caixa. Adeus ${money(u.price)}.`, 'bad');
   } else {
