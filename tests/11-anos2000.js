@@ -18,7 +18,7 @@ const { chromium } = require('playwright');
     await p.click(`.chip-btn[data-cat=${cat}]`); await p.click(`[data-action=buy][data-id=${id}]`);
   }
   await p.click('.tab[data-tab=build]');
-  while (await p.$('[data-action=install]')) await p.click('[data-action=install]');
+  while (await p.$('[data-action=install]')) { await p.click('[data-action=install]'); if (await p.isVisible('#paste-modal')) await p.click('#paste-modal [data-v=ok]'); }  // responde a pasta térmica
   await p.click('#btn-power'); await p.waitForTimeout(3000);
   console.log('pc on', await p.evaluate(() => S.pcOn));
   await p.locator('#case').screenshot({ path: process.env.SP + '/rt-case.png' });

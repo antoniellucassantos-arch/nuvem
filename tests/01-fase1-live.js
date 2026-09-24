@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
     await p.click(`.chip-btn[data-cat=${cat}]`); await p.click(`[data-action=buy][data-id=${id}]`);
   }
   await p.click('.tab[data-tab=build]');
-  while (await p.$('[data-action=install]')) await p.click('[data-action=install]');
+  while (await p.$('[data-action=install]')) { await p.click('[data-action=install]'); if (await p.isVisible('#paste-modal')) await p.click('#paste-modal [data-v=ok]'); }  // responde a pasta térmica
   await p.click('#btn-power'); await p.waitForTimeout(3000);
   console.log('POST:\n' + await p.textContent('#post'));
   console.log('status', await p.textContent('#pc-status'), 'money', await p.textContent('#stat-money'));

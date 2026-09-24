@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
   console.log('arrastou e instalou:', await p.evaluate(() => !!S.build.cpu), '| pergunta da pasta:', await p.isVisible('#paste-modal'));
   await p.screenshot({ path: `${process.env.SP}/pasta.png` });
   await p.click('#paste-modal [data-v=lots]');
-  while (await p.$('[data-action=install]')) await p.click('[data-action=install]');
+  while (await p.$('[data-action=install]')) { await p.click('[data-action=install]'); if (await p.isVisible('#paste-modal')) await p.click('#paste-modal [data-v=ok]'); }  // responde a pasta térmica
   if (await p.isVisible('#paste-modal')) await p.click('#paste-modal [data-v=ok]');
   await p.click('[data-action=care-cables]');
   console.log('cabos:', await p.evaluate(() => life().cables), '| pasta:', await p.evaluate(() => life().paste));

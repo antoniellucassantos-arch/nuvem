@@ -56,6 +56,9 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 - `js/pack1.js`: exportar/importar save, conquistas secretas, sons, tendências da semana, crise dos chips e personagem
 - `js/pack2.js`: aba Carreira (funcionários, campeonatos, collab, skins, ranking de rivais) e decoração do quarto
 - `js/retro.js` e `js/retro-ui.js`: modo anos 2000 (save separado, peças e jogos da época, monitor de tubo, internet discada)
+- `js/batch1.js` a `js/batch4.js`: tela inicial, chefões, bolsa, loja própria, escolhas, capivara que evolui, cápsula do tempo, desafios, saúde, amigos e namoro, cidades, montagem manual, vazamento do water cooler, mineração, canal de vídeos, podcast, clipes e Mundial
+- `js/rescue.js`: resgate anti-travamento (a mãe empresta o dinheiro da peça que falta)
+- `manifest.json`, `sw.js` e `icon.svg`: app instalável e offline (quando publicado)
 - `js/releases.js`: lançamentos do mercado (peças e jogos novos com o passar dos dias)
 - `js/dev-data.js`: dados da Fase 2 (ferramentas, gêneros, temas, cursos)
 - `js/dev.js`: lógica da Fase 2 (estudar, programar, lançar e vender)

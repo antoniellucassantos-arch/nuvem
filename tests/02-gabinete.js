@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
   }
   console.log('money after starter', await p.textContent('#stat-money'));
   await p.click('.tab[data-tab=build]');
-  while (await p.$('[data-action=install]')) await p.click('[data-action=install]');
+  while (await p.$('[data-action=install]')) { await p.click('[data-action=install]'); if (await p.isVisible('#paste-modal')) await p.click('#paste-modal [data-v=ok]'); }  // responde a pasta térmica
   await p.click('#btn-power'); await p.waitForTimeout(3000);
   await p.locator('#case').screenshot({ path: process.env.SP + '/case-starter.png' });
   // high-end build via save injection

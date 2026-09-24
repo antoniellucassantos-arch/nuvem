@@ -16,7 +16,7 @@ const { chromium } = require('playwright');
   console.log('bought ->', await step());
   await p.click('.tab[data-tab=build]'); console.log('build ->', await step());
   await p.screenshot({ path: process.env.SP + '/tut-4.png' });
-  while (await p.$('[data-action=install]')) await p.click('[data-action=install]');
+  while (await p.$('[data-action=install]')) { await p.click('[data-action=install]'); if (await p.isVisible('#paste-modal')) await p.click('#paste-modal [data-v=ok]'); }  // responde a pasta térmica
   console.log('installed ->', await step());
   await p.click('#btn-power'); await p.waitForTimeout(3000); console.log('on ->', await step());
   await p.click('.tab[data-tab=live]'); console.log('live tab ->', await step());
