@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
       inventory: ids.map((id, i) => ({ uid: i + 1, id })), build: { cpu: 1, mobo: 2, ram: 3, gpu: 4, storage: 5, psu: 6 } }));
   });
   await p.goto(url);
-  await p.click('.tab[data-tab=career]');
+  await p.click('.tab[data-tab=career]'); await p.evaluate(() => document.querySelectorAll('#tab-career .subtab').forEach(e => { e.hidden = false; }));  // testes veem todas as sub-abas
   for (const id of ['editor', 'mod', 'dev', 'manager']) await p.click(`[data-action=hire][data-id=${id}]`);
   await p.click('[data-action=skins][data-id="1"]');
   await p.click('[data-action=join-tourney]');
@@ -41,7 +41,7 @@ const { chromium } = require('playwright');
   await p.click('#btn-sleep');
   console.log('dev progress', pr0, '->', await p.evaluate(() => S.project.progress), '| rank', await p.evaluate(() => rankOf()));
   await p.setViewportSize({ width: 375, height: 800 });
-  await p.click('.tab[data-tab=career]');
+  await p.click('.tab[data-tab=career]'); await p.evaluate(() => document.querySelectorAll('#tab-career .subtab').forEach(e => { e.hidden = false; }));  // testes veem todas as sub-abas
   console.log('overflow', await p.evaluate(() => document.documentElement.scrollWidth));
   console.log('errors', errs);
   await b.close();

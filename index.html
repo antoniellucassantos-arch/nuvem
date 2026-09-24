@@ -291,21 +291,37 @@
     </section>
 
     <section id="tab-career" hidden>
-      <div class="grid-2">
-        <div class="card"><h2>📊 Ranking de streamers</h2><ol class="rank" id="rank-list"></ol></div>
+      <div class="chips subtabs" role="tablist">
+        <button class="chip-btn active" data-action="subtab" data-sub="vida">❤️ Vida</button>
+        <button class="chip-btn" data-action="subtab" data-sub="negocios">💼 Negócios</button>
+        <button class="chip-btn" data-action="subtab" data-sub="conteudo">📺 Conteúdo</button>
+        <button class="chip-btn" data-action="subtab" data-sub="competicoes">🏆 Competições</button>
+      </div>
+
+      <div class="subtab" data-sub="vida">
+        <div class="card" id="life-card"></div>
+        <div class="card" id="skills-card"></div>
+      </div>
+
+      <div class="subtab" data-sub="negocios" hidden>
         <div class="card"><h2>👥 Sua equipe</h2><div id="staff-list"></div></div>
-        <div class="card" id="tourney-card"></div>
+        <div class="card" id="store-card"></div>
+        <div class="card" id="stocks-card"></div>
+        <div class="card"><h2>🎨 Skins nos seus jogos</h2><div id="skins-list"></div></div>
+      </div>
+
+      <div class="subtab" data-sub="conteudo" hidden>
+        <div class="card" id="media-card"></div>
         <div class="card" id="collab-card"></div>
       </div>
-      <div class="card" id="skills-card"></div>
-      <div class="card" id="life-card"></div>
-      <div class="grid-2">
-        <div class="card" id="media-card"></div>
+
+      <div class="subtab" data-sub="competicoes" hidden>
+        <div class="grid-2">
+          <div class="card"><h2>📊 Ranking de streamers</h2><ol class="rank" id="rank-list"></ol></div>
+          <div class="card" id="tourney-card"></div>
+        </div>
         <div class="card" id="worlds-card"></div>
       </div>
-      <div class="card" id="stocks-card"></div>
-      <div class="card" id="store-card"></div>
-      <div class="card"><h2>🎨 Skins nos seus jogos</h2><div id="skins-list"></div></div>
     </section>
 
     <section id="tab-goals" hidden>

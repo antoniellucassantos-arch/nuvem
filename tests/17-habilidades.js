@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
   await p.goto('file://' + require('path').resolve(__dirname, '..', 'index.html'));
   const before = await p.evaluate(() => { S.tutorial = -1; S.stats.lives = 7; render(); return { free: pointsFree(), gear: gearMult(), energy: maxEnergy(), scam: Hooks.filter('scamChance', 0.12) }; });
   console.log('antes', JSON.stringify(before));
-  await p.click('.tab[data-tab=career]');
+  await p.click('.tab[data-tab=career]'); await p.evaluate(() => document.querySelectorAll('#tab-career .subtab').forEach(e => { e.hidden = false; }));  // testes veem todas as sub-abas
   await p.click('[data-action=perk-up][data-id=charisma]');
   await p.click('[data-action=perk-up][data-id=luck]');
   console.log('botão sem pontos desabilitado:', await p.isDisabled('[data-action=perk-up][data-id=stamina]'));

@@ -696,3 +696,4 @@ input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px
 .spark { width: 60px; height: 20px; vertical-align: middle; }
 .choice-box { background: var(--panel); border: 2px solid var(--accent); border-radius: 14px; padding: 20px; max-width: 460px; text-align: center; }
 .choice-buttons { display: grid; gap: 10px; margin-top: 12px; }
+.subtabs { position: sticky; top: 64px; z-index: 5; background: var(--bg); padding: 6px 0; }

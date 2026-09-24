@@ -20,7 +20,7 @@ const { chromium } = require('playwright');
   await p.click('[data-action=care-cables]');
   console.log('cabos:', await p.evaluate(() => life().cables), '| pasta:', await p.evaluate(() => life().paste));
   // vida
-  await p.click('.tab[data-tab=career]');
+  await p.click('.tab[data-tab=career]'); await p.evaluate(() => document.querySelectorAll('#tab-career .subtab').forEach(e => { e.hidden = false; }));  // testes veem todas as sub-abas
   const g0 = await p.evaluate(() => gearMult());
   await p.click('[data-action=life-move][data-id=sp]');
   console.log('mudou para SP, bônus:', await p.evaluate(() => life().city), (await p.evaluate(() => gearMult()) / g0).toFixed(2));

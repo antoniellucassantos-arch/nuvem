@@ -25,11 +25,11 @@ const { chromium } = require('playwright');
   console.log('venceu chefão:', await p.evaluate(() => S.followers) > f0);
   // bolsa
   await p.evaluate(() => { S.money = 10000; render(); });
-  await p.click('.tab[data-tab=career]');
+  await p.click('.tab[data-tab=career]'); await p.evaluate(() => document.querySelectorAll('#tab-career .subtab').forEach(e => { e.hidden = false; }));  // testes veem todas as sub-abas
   await p.click('[data-action=stock][data-id=cap]');
   const owned = await p.evaluate(() => stocks().owned.cap);
   for (let i = 0; i < 5; i++) await p.evaluate(() => { S.energy = 0; sleep(); });
-  await p.click('.tab[data-tab=career]');
+  await p.click('.tab[data-tab=career]'); await p.evaluate(() => document.querySelectorAll('#tab-career .subtab').forEach(e => { e.hidden = false; }));  // testes veem todas as sub-abas
   await p.locator('#stocks-card').screenshot({ path: `${process.env.SP}/bolsa.png` });
   await p.click('[data-action=stock][data-id=cap][data-q^="-"]');
   console.log('ações compradas:', owned, '| depois de vender:', await p.evaluate(() => stocks().owned.cap), '| histórico:', await p.evaluate(() => stocks().history.cap.length));

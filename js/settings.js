@@ -35,3 +35,12 @@ document.addEventListener('change', e => {
 });
 
 renderSettings();
+
+// Sub-abas da aba Carreira (Vida, Negócios, Conteúdo, Competições).
+function showSubtab(name) {
+  document.querySelectorAll('#tab-career .subtab').forEach(el => { el.hidden = el.dataset.sub !== name; });
+  document.querySelectorAll('#tab-career [data-action=subtab]').forEach(b => b.classList.toggle('active', b.dataset.sub === name));
+  try { localStorage.setItem('inforeal-subtab', name); } catch { /* ok */ }
+}
+Hooks.on('action', d => { if (d.action === 'subtab') showSubtab(d.sub); });
+try { showSubtab(localStorage.getItem('inforeal-subtab') || 'vida'); } catch { showSubtab('vida'); }

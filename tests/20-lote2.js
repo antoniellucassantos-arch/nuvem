@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
   await p.goto(url);
   await p.evaluate(() => { S.tutorial = -1; S.money = 200000; S.followers = 5000; render(); });
   // loja
-  await p.click('.tab[data-tab=career]');
+  await p.click('.tab[data-tab=career]'); await p.evaluate(() => document.querySelectorAll('#tab-career .subtab').forEach(e => { e.hidden = false; }));  // testes veem todas as sub-abas
   await p.click('[data-action=store-open]');
   await p.click('[data-action=store-buy][data-cat=gpu]');
   const m0 = await p.evaluate(() => S.money);
