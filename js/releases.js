@@ -84,9 +84,9 @@ function freshnessLabel(g) {
 
 // Peças ficam mais baratas com o tempo (até 45% de desconto).
 function priceOf(p) {
-  if (['gear', 'case', 'server'].includes(p.cat)) return p.price;
+  if (['gear', 'case', 'server'].includes(p.cat)) return Hooks.filter('price', p.price, p);
   const age = S.day - (p.day || 1);
-  return Math.round(p.price * Math.max(0.55, 1 - age * 0.004));
+  return Hooks.filter('price', Math.round(p.price * Math.max(0.55, 1 - age * 0.004)), p);
 }
 
 // Avisa os lançamentos entre dois dias (ao dormir).

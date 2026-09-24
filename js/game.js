@@ -162,6 +162,7 @@ function buyPart(id) {
     S.inventory.push({ uid: S.nextUid++, id });
   }
   S.money -= priceOf(p);
+  Hooks.run('bought', p);
   toast(['gear', 'case', 'server'].includes(p.cat) ? `🛒 ${p.name} comprado!` : `🛒 ${p.name} comprado! Instale na aba Montagem.`);
   changed();
 }
@@ -266,7 +267,7 @@ function novelty(gameId) {
 
 function gearMult() {
   const caseMult = (PART_BY_ID[S.caseId] || PART_BY_ID.k1).mult;
-  return S.gear.reduce((m, id) => m * PART_BY_ID[id].mult, caseMult) * petMult();
+  return Hooks.filter('gearMult', S.gear.reduce((m, id) => m * PART_BY_ID[id].mult, caseMult) * petMult());
 }
 
 /* ---------- Live ---------- */
@@ -328,6 +329,7 @@ function startLive() {
   startSim(game, fps);
   updateLiveView();
   live.timer = setInterval(liveTick, TICK_MS);
+  Hooks.run('liveStart');
 }
 
 // Câmera do streamer por cima do jogo (se você comprou webcam).
@@ -398,6 +400,7 @@ function liveTick() {
 }
 
 function endLive(reason) {
+  Hooks.run('liveEnd', reason);
   const L = live;
   clearInterval(L.timer);
   live = null;
@@ -429,6 +432,9 @@ function endLive(reason) {
 }
 
 function addChat(name, text, cls = '') {
+  const msg = Hooks.filter('chat', { name, text, cls });
+  if (!msg) return;
+  ({ name, text, cls } = msg);
   const chat = $('#chat');
   const line = document.createElement('div');
   line.className = 'chat-line ' + cls;
@@ -438,6 +444,7 @@ function addChat(name, text, cls = '') {
   chat.append(line);
   while (chat.children.length > 60) chat.firstChild.remove();
   chat.scrollTop = chat.scrollHeight;
+  Hooks.run('chatAdded', msg);
 }
 
 function updateLiveView() {
@@ -464,6 +471,7 @@ function sleep() {
   dailyEvent();
   extrasDaily();
   announceReleases(yesterday, S.day);
+  Hooks.run('daily');
   changed();
 }
 
@@ -493,6 +501,7 @@ function toast(text, cls = '') {
   $('#toasts').append(el);
   while ($('#toasts').children.length > 4) $('#toasts').firstChild.remove();
   setTimeout(() => el.remove(), 3500);
+  Hooks.run('toast', text, cls);
 }
 
 function partSpec(p) {
@@ -520,6 +529,7 @@ function render() {
   renderGoals();
   renderDev();
   renderLab();
+  Hooks.run('render');
 }
 
 function renderHeader() {
@@ -816,6 +826,7 @@ document.addEventListener('click', e => {
     default:
       handleDevAction(d);
       handleLabAction(d);
+      Hooks.run('action', d);
   }
 });
 

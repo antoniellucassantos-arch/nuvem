@@ -16,6 +16,7 @@ function psuExplodes(b) {
 
 // Remove a fonte (e às vezes leva outra peça junto). Devolve a mensagem para mostrar.
 function psuBoom() {
+  Hooks.run('psuBoom');
   const uid = S.build.psu;
   S.inventory = S.inventory.filter(i => i.uid !== uid);
   S.build.psu = null;

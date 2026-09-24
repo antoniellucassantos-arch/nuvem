@@ -17,30 +17,20 @@ function renderRetro() {
   });
 }
 
-const _render3 = render;
-render = function () { _render3(); renderRetro(); };
+Hooks.on('render', renderRetro);
 
 // Internet discada: toda live começa conectando (a menos que você tenha banda larga).
-const _startLive3 = startLive;
-startLive = function () {
-  _startLive3();
-  if (RETRO && live) {
-    if (S.gear.includes('e9')) return;
-    liveBanner('📞 Conectando na internet discada... iiiiiuuuuu kshhhhhh 🎵');
-    [1200, 2100, 900, 1800, 2400].forEach((f, i) => setTimeout(() => beep(f, 0.25, 'sine', 0.04), i * 250));
-    live.lag = 4;
-  }
-};
+Hooks.on('liveStart', () => {
+  if (!RETRO || S.gear.includes('e9')) return;
+  liveBanner('📞 Conectando na internet discada... iiiiiuuuuu kshhhhhh 🎵');
+  [1200, 2100, 900, 1800, 2400].forEach((f, i) => setTimeout(() => beep(f, 0.25, 'sine', 0.04), i * 250));
+  live.lag = 4;
+});
 
-const _handleLabAction3 = handleLabAction;
-handleLabAction = function (d) {
-  if (d.action === 'set-mode') {
-    if (busy()) return;
-    const retro = d.mode === 'retro';
-    if (confirm(retro ? 'Viajar para os anos 2000? Seu save atual fica guardado.' : 'Voltar para os dias de hoje? O save dos anos 2000 fica guardado.')) setMode(retro);
-    return;
-  }
-  return _handleLabAction3(d);
-};
+Hooks.on('action', d => {
+  if (d.action !== 'set-mode' || busy()) return;
+  const retro = d.mode === 'retro';
+  if (confirm(retro ? 'Viajar para os anos 2000? Seu save atual fica guardado.' : 'Voltar para os dias de hoje? O save dos anos 2000 fica guardado.')) setMode(retro);
+});
 
 render();

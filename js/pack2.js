@@ -182,62 +182,45 @@ function renderCareer() {
     : '<p class="muted">Lance jogos na aba Dev para vender skins neles.</p>';
 }
 
-/* ---------- Ligando nas funções existentes ---------- */
+/* ---------- Ganchos ---------- */
 
-const _render2 = render;
-render = function () { _render2(); renderCareer(); renderDecor(); };
+Hooks.on('render', () => { renderCareer(); renderDecor(); });
+Hooks.on('daily', pack2Daily);
+Hooks.on('gearMult', v => v * (hired('editor') ? 1.08 : 1) * (hired('mod') ? 1.03 : 1));
+Hooks.on('chat', msg => (msg.cls === 'hater' && hired('mod') ? { name: '🛡️ Moderador', text: 'baniu um hater do chat', cls: 'sys' } : msg));
 
-const _gearMult = gearMult;
-gearMult = function () { return _gearMult() * (hired('editor') ? 1.08 : 1) * (hired('mod') ? 1.03 : 1); };
-
-const _addChat2 = addChat;
-addChat = function (name, text, cls = '') {
-  if (cls === 'hater' && hired('mod')) return _addChat2('🛡️ Moderador', 'baniu um hater do chat', 'sys');
-  _addChat2(name, text, cls);
-};
-
-const _startLive = startLive;
-startLive = function () {
-  _startLive();
-  if (live && S.collab) {
+Hooks.on('liveStart', () => {
+  if (S.collab) {
     live.raid += S.collab.viewers;
     liveBanner(`🤝 Collab com ${S.collab.name}! O público dele chegou na sua live.`);
     S.collab = null;
   }
-  if (live && S.tourney) liveBanner(`🏆 CAMPEONATO! Clique em "Jogar eu mesmo" e faça ${S.tourney.target} pontos.`);
-};
+  if (S.tourney) liveBanner(`🏆 CAMPEONATO! Clique em "Jogar eu mesmo" e faça ${S.tourney.target} pontos.`);
+});
 
-const _endLive2 = endLive;
-endLive = function (reason) {
-  if (S.tourney && sim) {
-    const T = S.tourney;
-    S.tourney = null;
-    if (sim.manual && sim.score >= T.target) {
-      S.money += T.prize;
-      S.followers += T.followers;
-      S.tourneyWins++;
-      toast(`🏆 VOCÊ VENCEU O CAMPEONATO! +${money(T.prize)} e +${num(T.followers)} seguidores`, 'goal');
-    } else {
-      toast(`😢 Você perdeu o campeonato (${sim.score}/${T.target} pontos${sim.manual ? '' : ', e nem jogou você mesmo'}).`, 'bad');
-    }
+Hooks.on('liveEnd', () => {
+  if (!S.tourney || !sim) return;
+  const T = S.tourney;
+  S.tourney = null;
+  if (sim.manual && sim.score >= T.target) {
+    S.money += T.prize;
+    S.followers += T.followers;
+    S.tourneyWins++;
+    toast(`🏆 VOCÊ VENCEU O CAMPEONATO! +${money(T.prize)} e +${num(T.followers)} seguidores`, 'goal');
+  } else {
+    toast(`😢 Você perdeu o campeonato (${sim.score}/${T.target} pontos${sim.manual ? '' : ', e nem jogou você mesmo'}).`, 'bad');
   }
-  _endLive2(reason);
-};
+});
 
-const _extrasDaily2 = extrasDaily;
-extrasDaily = function () { _extrasDaily2(); pack2Daily(); };
-
-const _handleLabAction2 = handleLabAction;
-handleLabAction = function (d) {
+Hooks.on('action', d => {
   switch (d.action) {
     case 'hire': return hire(d.id);
     case 'fire': return fire(d.id);
     case 'join-tourney': return joinTourney();
     case 'invite-collab': return inviteCollab();
     case 'skins': return launchSkins(Number(d.id));
-    default: return _handleLabAction2(d);
   }
-};
+});
 
 // Decoração: itens de "Equipamento de live" com enfeite aparecem na parede da live.
 function renderDecor() {

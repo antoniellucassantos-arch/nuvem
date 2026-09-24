@@ -275,7 +275,7 @@ function salesFor(game) {
   const age = S.day - game.day;
   const base = (20 + 1.5 * Math.pow(S.followers, 0.6)) * Math.pow(game.score / 10, 2.5) * size.sales * price.units
     * Math.pow(0.85, age) * (1 + game.hype);
-  return Math.round(base * rand(0.85, 1.15));
+  return Hooks.filter('sales', Math.round(base * rand(0.85, 1.15)), game);
 }
 
 function applySales(game, units) {

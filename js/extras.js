@@ -26,6 +26,7 @@ function ocBurn(b) {
   S.build[slot] = null;
   S.pcOn = false;
   const msg = `🔥 Overclock demais! ${part.name} queimou. Cheiro de fritura no quarto...`;
+  Hooks.run('ocBurn');
   toast(msg, 'bad');
   return msg;
 }
@@ -36,7 +37,9 @@ function pirateGame(id) {
   const g = gameById(id);
   if (!g || busy() || ownsGame(id)) return;
   S.games.push(id);
-  if (!S.gear.includes('e13') && Math.random() < 0.4) {
+  const infected = !S.gear.includes('e13') && Math.random() < 0.4;
+  Hooks.run('pirated', infected && !S.virus);
+  if (infected) {
     S.virus = true;
     toast('🦠 O "crack" veio com vírus! Seu PC está minerando Capicoin escondido. Compre um antivírus na Loja.', 'bad');
   } else {
@@ -63,6 +66,7 @@ function buyUsed(i) {
   const p = PART_BY_ID[u.id];
   const roll = Math.random();
   if (roll < 0.12) {
+    Hooks.run('usedBrick');
     toast(`🧱 GOLPE! ${u.seller} te mandou um TIJOLO na caixa. Adeus ${money(u.price)}.`, 'bad');
   } else {
     S.inventory.push({ uid: S.nextUid++, id: u.id });
@@ -77,6 +81,7 @@ function feedPet() {
   if (S.money < 10) return;
   S.money -= 10;
   S.pet.food = Math.min(100, S.pet.food + 40);
+  Hooks.run('petFed');
   toast('🦫 A capivara comeu e ficou feliz!');
   changed();
 }

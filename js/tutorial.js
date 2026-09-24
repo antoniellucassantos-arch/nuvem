@@ -53,18 +53,12 @@ function tutorialTick() {
 }
 setInterval(tutorialTick, 400);
 
-const _handleLabActionTut = handleLabAction;
-handleLabAction = function (d) {
-  if (d.action === 'tut-skip') { S.tutorial = -1; saveGame(); return tutorialTick(); }
-  if (d.action === 'tut-restart') { S.tutorial = 0; saveGame(); showTab('build'); return tutorialTick(); }
-  return _handleLabActionTut(d);
-};
+Hooks.on('action', d => {
+  if (d.action === 'tut-skip') { S.tutorial = -1; saveGame(); tutorialTick(); }
+  if (d.action === 'tut-restart') { S.tutorial = 0; saveGame(); showTab('build'); tutorialTick(); }
+});
 
 // Depois de apagar o progresso, o tutorial recomeça.
-const _renderTut = render;
-render = function () {
-  if (S.tutorial === undefined) S.tutorial = 0;
-  _renderTut();
-};
+Hooks.on('render', () => { if (S.tutorial === undefined) S.tutorial = 0; });
 
 tutorialTick();

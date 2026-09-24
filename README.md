@@ -44,6 +44,7 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 ## Estrutura
 
 - `index.html`: página do jogo
+- `js/core.js`: sistema de ganchos (`Hooks.on` / `Hooks.run` / `Hooks.filter`). O jogo base anuncia o que acontece (redesenhou a tela, passou o dia, a live acabou, calculou um preço...) e cada módulo se inscreve só no que precisa
 - `css/style.css`: visual
 - `js/data.js`: peças, jogos, objetivos e mensagens do chat
 - `js/game.js`: lógica do jogo (montagem, loja, lives)
@@ -58,3 +59,12 @@ Com a IA no nível 5, crie sua própria linguagem de programação (nome, estilo
 - `js/dev-data.js`: dados da Fase 2 (ferramentas, gêneros, temas, cursos)
 - `js/dev.js`: lógica da Fase 2 (estudar, programar, lançar e vender)
 - `js/lab-data.js` e `js/lab.js`: Fases 3 e 4 (IA, linguagem e sua própria IA)
+
+## Testes
+
+A pasta `tests/` tem testes automáticos que abrem o jogo num navegador (Playwright) e jogam cada parte:
+
+```bash
+tests/run-all.sh                 # roda todos os testes
+node tests/bot-balanceamento.js  # robô que joga 120 dias e mostra em que dia chega a cada marco
+```

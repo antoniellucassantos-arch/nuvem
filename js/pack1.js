@@ -216,67 +216,25 @@ function renderPack1() {
   $('#dev-trend').hidden = !trendHtml;
 }
 
-/* ---------- Ligando nas funções existentes ---------- */
+/* ---------- Ganchos ---------- */
 
-const _render = render;
-render = function () { _render(); renderPack1(); };
-
-const _toast = toast;
-toast = function (text, cls = '') {
-  _toast(text, cls);
+Hooks.on('render', renderPack1);
+Hooks.on('daily', packDaily);
+Hooks.on('toast', (text, cls) => {
   if (cls === 'goal') sfx(text.startsWith('🏅') ? 'level' : 'alert');
   if (cls === 'bad') sfx('bad');
-};
-
-const _psuBoom = psuBoom;
-psuBoom = function () { S.counts.boom++; sfx('boom'); return _psuBoom(); };
-
-const _ocBurn = ocBurn;
-ocBurn = function (b) { const r = _ocBurn(b); if (r) { S.counts.burn++; sfx('boom'); } return r; };
-
-const _pirateGame = pirateGame;
-pirateGame = function (id) {
-  const had = S.virus;
-  const owned = ownsGame(id);
-  _pirateGame(id);
-  if (!owned && ownsGame(id)) S.counts.pirate++;
-  if (!had && S.virus) S.counts.virus++;
-};
-
-const _buyUsed = buyUsed;
-buyUsed = function (i) {
-  const before = S.inventory.length, money0 = S.money;
-  _buyUsed(i);
-  if (S.money < money0 && S.inventory.length === before) S.counts.brick++;
-};
-
-const _feedPet = feedPet;
-feedPet = function () { const m = S.money; _feedPet(); if (S.money < m) S.counts.pet++; };
-
-const _endLive = endLive;
-endLive = function (reason) { if (reason === 'mae') { S.counts.mae++; sfx('mae'); } _endLive(reason); };
-
-const _addChat = addChat;
-addChat = function (name, text, cls = '') { _addChat(name, text, cls); if (cls === 'donation') sfx('coin'); };
-
-const _priceOf = priceOf;
-priceOf = function (p) { const v = _priceOf(p); return S.crisis && p.cat === 'gpu' ? Math.round(v * CRISIS_GPU) : v; };
-
-const _buyPart = buyPart;
-buyPart = function (id) {
-  const n = S.inventory.length;
-  _buyPart(id);
-  if (S.crisis && PART_BY_ID[id].cat === 'gpu' && S.inventory.length > n) S.counts.crisisBuy = (S.counts.crisisBuy || 0) + 1;
-};
-
-const _salesFor = salesFor;
-salesFor = function (game) { const u = _salesFor(game); return S.trend && game.genre === S.trend.genre ? u * TREND_BONUS : u; };
-
-const _extrasDaily = extrasDaily;
-extrasDaily = function () { _extrasDaily(); packDaily(); };
-
-const _handleLabAction = handleLabAction;
-handleLabAction = function (d) {
+});
+Hooks.on('psuBoom', () => { S.counts.boom++; sfx('boom'); });
+Hooks.on('ocBurn', () => { S.counts.burn++; sfx('boom'); });
+Hooks.on('pirated', infected => { S.counts.pirate++; if (infected) S.counts.virus++; });
+Hooks.on('usedBrick', () => { S.counts.brick++; });
+Hooks.on('petFed', () => { S.counts.pet++; });
+Hooks.on('liveEnd', reason => { if (reason === 'mae') { S.counts.mae++; sfx('mae'); } });
+Hooks.on('chatAdded', msg => { if (msg.cls === 'donation') sfx('coin'); });
+Hooks.on('price', (v, p) => (S.crisis && p.cat === 'gpu' ? Math.round(v * CRISIS_GPU) : v));
+Hooks.on('bought', p => { if (S.crisis && p.cat === 'gpu') S.counts.crisisBuy++; });
+Hooks.on('sales', (u, game) => (S.trend && game.genre === S.trend.genre ? u * TREND_BONUS : u));
+Hooks.on('action', d => {
   switch (d.action) {
     case 'toggle-sound': S.sound = !S.sound; saveGame(); return renderPack1();
     case 'avatar':
@@ -286,9 +244,8 @@ handleLabAction = function (d) {
       return renderPack1();
     case 'export-save': return exportSave();
     case 'import-save': return importSave();
-    default: return _handleLabAction(d);
   }
-};
+});
 
 if (!S.trend) packDaily();
 render();
