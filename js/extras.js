@@ -19,7 +19,7 @@ function ocBurn(b) {
   if (!S.oc || !b.parts.cpu) return null;
   const cooler = { stock: 1, tower: 0.5, aio: 0.25 }[b.parts.cpu.cooler] || 1;
   const paste = S.gear.includes('e12') ? 0.5 : 1;
-  if (Math.random() > Math.pow(S.oc / 100, 2) * 0.08 * cooler * paste) return null;
+  if (Math.random() > Hooks.filter('ocBurnChance', Math.pow(S.oc / 100, 2) * 0.08 * cooler * paste)) return null;
   const slot = Math.random() < 0.5 ? 'cpu' : 'gpu';
   const part = itemPart(S.build[slot]);
   S.inventory = S.inventory.filter(i => i.uid !== S.build[slot]);

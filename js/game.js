@@ -172,6 +172,7 @@ function installPart(uid) {
   if (!p || busy()) return;
   S.build[p.cat] = uid;
   S.pcOn = false;
+  Hooks.run('installed', p);
   changed();
 }
 

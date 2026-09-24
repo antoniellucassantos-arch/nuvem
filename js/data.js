@@ -95,6 +95,7 @@ const PARTS = [
   { id: 'd4', cat: 'gear', name: 'Prateleira de bonecos', price: 900, unlock: 300, mult: 1.03, decor: '🦸' },
   { id: 'd5', cat: 'gear', name: 'Fita de LED na parede', price: 250, unlock: 50, mult: 1.02, decor: '🌈' },
   { id: 'd6', cat: 'gear', name: 'Capivara de pelúcia gigante', price: 350, unlock: 0, mult: 1.03, decor: '🦫' },
+  { id: 'e14', cat: 'gear', name: 'Academia em casa', price: 5000, unlock: 999999999, mult: 1, desc: 'Comprada na aba Carreira' },
   { id: 'e11', cat: 'gear', name: 'Monitor Samsung Odyssey G9 49" Ultrawide', price: 7000, unlock: 3000, mult: 1.08, monitor: 'ultra' },
 
   // Casas (compra única; cada uma dá +10 de energia máxima)

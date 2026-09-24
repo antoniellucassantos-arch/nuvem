@@ -15,6 +15,7 @@
 //   price(v, peça)  filtro de preço                    sales(cópias, jogo)  filtro de vendas
 //   gearMult(v)     filtro do bônus de público         bought(peça)
 //   psuBoom, ocBurn, pirated(pegouVirus), usedBrick, petFed
+//   installed(peça)   uma peça foi instalada no PC
 //   released(jogo, projeto)   um jogo acabou de ser lançado (antes das vendas do 1º dia)
 //   maxEnergy(v), donationChance(v), scamChance(v), virusChance(v)   filtros de números
 
